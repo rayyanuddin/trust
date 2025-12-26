@@ -1,13 +1,98 @@
 import { useState, useEffect } from "react";
 import trust4 from "../assets/trust4.png";
 
+// Import team member images
+import photo1 from "../assets/photo1.jpg";
+import photo2 from "../assets/photo2.jpeg";
+import photo3 from "../assets/photo3.jpg";
+import photo4 from "../assets/photo4.jpg";
+import photo5 from "../assets/photo5.jpg";
+import photo6 from "../assets/photo6.jpg";
+import photo7 from "../assets/photo7.jpg";
+import photo8 from "../assets/photo8.jpg";
+import photo9 from "../assets/photo9.jpg";
+
+// Team members data with imported images
+const teamMembers = [
+  {
+    name: "Dr S D Sudarsan",
+    role: "Executive Director",
+    organization: "C-DAC, Bengaluru",
+    category: "executive",
+    image: photo1 // Use imported variable directly
+  },
+  {
+    name: "Shri S A Kumar",
+    role: "Advisor",
+    organization: "C-DAC, Bengaluru",
+    category: "executive",
+    image: photo2
+  },
+  {
+    name: "Dr Mohammed Misbahuddin",
+    role: "Scientist 'F'",
+    organization: "C-DAC, Bengaluru",
+    category: "executive",
+    image: photo3
+  },
+  {
+    name: "Dr Sanjay Adiwal",
+    role: "Scientist 'E'",
+    organization: "C-DAC, Bengaluru",
+    category: "executive",
+    image: photo4
+  },
+  {
+    name: "Dr. Amudha J",
+    role: "Professor",
+    organization: "Amrita Vishwa Vidyapeetham, Bengaluru",
+    category: "committee",
+    image: photo5
+  },
+  {
+    name: "Shri Ashish Kuvelkar",
+    role: "Scientist 'G'",
+    organization: "C-DAC Pune",
+    category: "committee",
+    image: photo6
+  },
+  {
+    name: "Shri Naveen Kumar",
+    role: "Scientist E/Additional Director",
+    organization: "MeitY",
+    category: "committee",
+    image: photo7
+  },
+  {
+    name: "Dr Divya Vetriveeran",
+    role: "Assistant Professor",
+    organization: "CHRIST University, Bengaluru",
+    category: "committee",
+    image: photo8
+  },
+  {
+    name: "Dr. Rajesh Kondareddy",
+    role: "Assistant Professor",
+    organization: "Central Institute of Technology Kokrajhar, Assam",
+    category: "committee",
+    image: photo9
+  }
+];
+
 const About = () => {
   const [animate, setAnimate] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimate(true), 50);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle image loading errors
+  const handleImageError = (memberName) => {
+    console.error(`Failed to load image for ${memberName}`);
+    setImageErrors(prev => ({ ...prev, [memberName]: true }));
+  };
 
   return (
     <div className="w-full">
@@ -53,6 +138,8 @@ const About = () => {
           </div>
         </section>
 
+        {/* Team Members Section */}
+     
         {/* Programs Section */}
         <section className="mb-16">
           <div className={`transition-all duration-1000 delay-700 ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
@@ -98,7 +185,6 @@ const About = () => {
                 </div>
               </div>
 
-             
               <div className="bg-gradient-to-br from-blue-50 to-slate-100 rounded-2xl p-6 shadow-lg group hover:shadow-xl transition-all duration-300">
                 <h3 className="text-2xl font-bold text-sky-700 mb-4">Faculty Industrial Immersion Program (FIIP)</h3>
                 <div className="space-y-3">
@@ -239,6 +325,96 @@ const About = () => {
             </div>
           </div>
         </section>
+           <section className="mb-16">
+          <div className={`transition-all duration-1000 delay-600 ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-10 text-center">
+              Our Team
+            </h2>
+            
+            {/* Executive Team */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-bold text-sky-700 mb-6 pb-2 border-b border-sky-200">
+                Executive Team
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {teamMembers
+                  .filter(member => member.category === "executive")
+                  .map((member, index) => (
+                    <div 
+                      key={index}
+                      className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-slate-100 p-6"
+                    >
+                      <div className="text-center">
+                        {/* Profile Image with Fallback */}
+                        <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center">
+                          {!imageErrors[member.name] ? (
+                            <img 
+                              src={member.image} 
+                              alt={member.name}
+                              className="w-full h-full object-cover"
+                              onError={() => handleImageError(member.name)}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sky-100 to-blue-100">
+                              <span className="text-3xl font-bold text-sky-600">
+                                {member.name.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <h4 className="text-lg font-bold text-slate-900 mb-1">{member.name}</h4>
+                        <p className="text-sky-600 font-medium mb-2">{member.role}</p>
+                        <p className="text-slate-500 text-sm">{member.organization}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Project Review Committee */}
+            <div>
+              <h3 className="text-2xl font-bold text-sky-700 mb-6 pb-2 border-b border-sky-200">
+                Project Review Committee
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {teamMembers
+                  .filter(member => member.category === "committee")
+                  .map((member, index) => (
+                    <div 
+                      key={index}
+                      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-slate-100 p-6"
+                    >
+                      <div className="flex items-start space-x-4">
+                        {/* Profile Image with Fallback */}
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-50 to-sky-50 flex items-center justify-center flex-shrink-0">
+                          {!imageErrors[member.name] ? (
+                            <img 
+                              src={member.image} 
+                              alt={member.name}
+                              className="w-full h-full object-cover"
+                              onError={() => handleImageError(member.name)}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-sky-50">
+                              <span className="text-xl font-bold text-sky-600">
+                                {member.name.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-slate-900 mb-1">{member.name}</h4>
+                          <p className="text-sky-600 font-medium mb-2">{member.role}</p>
+                          <p className="text-slate-500 text-sm">{member.organization}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
 
         {/* Contact Section */}
         <section className={`transition-all duration-1000 delay-1100 ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
