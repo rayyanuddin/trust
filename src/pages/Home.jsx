@@ -1,26 +1,62 @@
 import trust1 from "../assets/trust1.jpg";
 import trust4 from "../assets/trust4.png";
-import trust5 from "../assets/trust5.jpg"; // Add your third image here
+import trust5 from "../assets/trust5.jpg";
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Home = () => {
   const [animate, setAnimate] = useState(false);
   const [scrollAnimations, setScrollAnimations] = useState({});
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const [countValues, setCountValues] = useState({
+    trained: 0,
+    programs: 0,
+    labs: 0,
+    visits: 0
+  });
+
+  // Business capacity building counters
+  const [businessCounters] = useState([
+    { name: "PG Certificate Programme", desc: "6 months PGCP course", target: 11797, hasPlus: true },
+    { name: "Master's Courses", desc: "4 months training for Master's courses", target: 50, hasPlus: false },
+    { name: "Practicum", desc: "Training for minority candidates", target: 196, hasPlus: false },
+    { name: "Experiential Learning", desc: "4-7 days industry relevant training", target: 2000, hasPlus: true },
+    { name: "Corporate Trainings", desc: "1-2 weeks trainings", target: 350, hasPlus: false },
+    { name: "Establishment of Labs", desc: "Research Lab setup", target: 30, hasPlus: true, extraText: " lab kits" },
+    { name: "Industrial Visits", desc: "2-hour interactive session", target: 3000, hasPlus: true }
+  ]);
+
+  // Funded activities counters
+  const [fundedCounters] = useState([
+    { name: "ISEA Phase-III", desc: "Awareness program in Cyber security", target: 10000, hasPlus: true },
+    { name: "FutureSkills Prime", desc: "MeitY and NASSCOM project (Lead Resource Centre for IoT)", target: 2400, hasPlus: false },
+    { name: "SC-ST IoT BLP Upskilling", desc: "Offered in Blended learning mode", target: 17800, hasPlus: true },
+    { name: "Work-based Learning", desc: "6-month stipend-based internship", target: 105, hasPlus: true },
+    { name: "C-HUK", desc: "Offered in Offline mode with varied training types", target: 2500, hasPlus: true }
+  ]);
+
+  const [displayBusinessValues, setDisplayBusinessValues] = useState(businessCounters.map(() => 0));
+  const [displayFundedValues, setDisplayFundedValues] = useState(fundedCounters.map(() => 0));
+  const [isAnimatingBusiness, setIsAnimatingBusiness] = useState(false);
+  const [isAnimatingFunded, setIsAnimatingFunded] = useState(false);
+
   const location = useLocation();
-  
+  const navigate = useNavigate();
+
   const sectionRefs = useRef([]);
   const sliderIntervalRef = useRef(null);
+  const businessAnimationRefs = useRef([]);
+  const fundedAnimationRefs = useRef([]);
 
-  // Images for the slider - NOW 3 SLIDES
   const sliderImages = [
     {
       src: trust1,
       title: "Empowering Through Technology",
       subtitle: "Driving innovation and building capacity in cutting-edge technologies for a future-ready workforce.",
       gradient: "from-sky-400 to-blue-500",
-      cta: "Explore Programs"
+      cta: "Explore Acitvities"
     },
     {
       src: trust4,
@@ -30,7 +66,7 @@ const Home = () => {
       cta: "Discover Courses"
     },
     {
-      src: trust5 || trust1, // Fallback to trust1 if trust5 doesn't exist
+      src: trust5 || trust1,
       title: "Innovation in Education",
       subtitle: "Creating next-generation learning experiences through technology and collaboration.",
       gradient: "from-green-500 to-teal-600",
@@ -38,17 +74,253 @@ const Home = () => {
     }
   ];
 
-  // Auto slide functionality with smooth transitions
+  // Activities data
+  const activitiesData = [
+    {
+      title: "PG Certificate Programme",
+      desc: "6 months PGCP courses providing advanced technical expertise and hands-on experience.",
+      emoji: "🎓",
+      color: "sky",
+      delay: 300,
+      link: "/pgdiploma",
+      linkText: "View Courses",
+      count: "11,797+"
+    },
+    {
+      title: "Master's Courses",
+      desc: "4 months training programs for advanced knowledge and research-oriented learning.",
+      emoji: "📚",
+      color: "blue",
+      delay: 400,
+      link: "/master",
+      linkText: "Explore Programs",
+      count: "50+"
+    },
+    {
+      title: "Practicum",
+      desc: "Specialized training programs designed for minority candidates.",
+      emoji: "👥",
+      color: "indigo",
+      delay: 500,
+      link: "/practium",
+      linkText: "Learn More",
+      count: "196+"
+    },
+    {
+      title: "Experiential Learning",
+      desc: "4-7 days industry relevant training programs for practical exposure.",
+      emoji: "🌱",
+      color: "sky",
+      delay: 600,
+      link: "/expermential",
+      linkText: "Discover",
+      count: "2,000+"
+    },
+    {
+      title: "Corporate Trainings",
+      desc: "1-2 weeks training solutions tailored for corporate teams.",
+      emoji: "🏢",
+      color: "blue",
+      delay: 700,
+      link: "/coporate",
+      linkText: "Get Details",
+      count: "350+"
+    },
+    {
+      title: "Establishment of Labs",
+      desc: "Setting up research labs with modern equipment and technology kits.",
+      emoji: "🧪",
+      color: "indigo",
+      delay: 800,
+      link: "/labs",
+      linkText: "View Options",
+      count: "30+ lab kits"
+    },
+    {
+      title: "Industrial Visits",
+      desc: "2-hour interactive sessions at industries for practical knowledge.",
+      emoji: "🏭",
+      color: "green",
+      delay: 900,
+      link: "/industrial",
+      linkText: "Schedule Visit",
+      count: "3,000+"
+    },
+    {
+      title: "Funded: ISEA Phase-III",
+      desc: "Awareness program in Cyber security with extensive reach.",
+      emoji: "🔐",
+      color: "purple",
+      delay: 1000,
+      link: "/isea",
+      linkText: "Know More",
+      count: "10,000+"
+    },
+    {
+      title: "Funded: FutureSkills Prime",
+      desc: "MeitY and NASSCOM project (Lead Resource Centre for IoT).",
+      emoji: "🚀",
+      color: "purple",
+      delay: 1100,
+      link: "/future",
+      linkText: "Explore",
+      count: "2,400+"
+    },
+    {
+      title: "Funded: SC-ST IoT BLP",
+      desc: "Upskilling offered in Blended learning mode for SC-ST candidates.",
+      emoji: "📱",
+      color: "purple",
+      delay: 1200,
+      link: "/scst-iot",
+      linkText: "View Details",
+      count: "17,800+"
+    },
+    {
+      title: "Funded: Work-based Learning",
+      desc: "6-month stipend-based internship programs.",
+      emoji: "💼",
+      color: "purple",
+      delay: 1300,
+      link: "/wbl",
+      linkText: "Apply Now",
+      count: "105+"
+    },
+    {
+      title: "Funded: C-HUK",
+      desc: "Offered in Offline mode with varied training types and approaches.",
+      emoji: "🏛️",
+      color: "purple",
+      delay: 1400,
+      link: "/chuk",
+      linkText: "Learn More",
+      count: "2,500+"
+    },
+  ];
+
+  // Function to animate business counters
+  const animateBusinessCounters = () => {
+    if (isAnimatingBusiness) return;
+    
+    setIsAnimatingBusiness(true);
+    
+    // Reset all counters to 0
+    setDisplayBusinessValues(businessCounters.map(() => 0));
+    
+    // Clear any existing animations
+    businessAnimationRefs.current.forEach(ref => {
+      if (ref) cancelAnimationFrame(ref);
+    });
+    businessAnimationRefs.current = [];
+
+    // Start fresh animation for each counter
+    businessCounters.forEach((item, index) => {
+      const target = item.target;
+      const duration = 2000; // Animation duration
+      const startTime = Date.now();
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const current = Math.floor(easeOutQuart * target);
+
+        setDisplayBusinessValues(prev => {
+          const newVals = [...prev];
+          newVals[index] = current;
+          return newVals;
+        });
+
+        if (progress < 1) {
+          businessAnimationRefs.current[index] = requestAnimationFrame(animate);
+        } else {
+          // Animation complete for this counter
+          setDisplayBusinessValues(prev => {
+            const newVals = [...prev];
+            newVals[index] = target;
+            return newVals;
+          });
+        }
+      };
+
+      // Staggered animation with delay
+      setTimeout(() => {
+        businessAnimationRefs.current[index] = requestAnimationFrame(animate);
+      }, index * 300);
+    });
+  };
+
+  // Function to animate funded counters
+  const animateFundedCounters = () => {
+    if (isAnimatingFunded) return;
+    
+    setIsAnimatingFunded(true);
+    
+    // Reset all counters to 0
+    setDisplayFundedValues(fundedCounters.map(() => 0));
+    
+    // Clear any existing animations
+    fundedAnimationRefs.current.forEach(ref => {
+      if (ref) cancelAnimationFrame(ref);
+    });
+    fundedAnimationRefs.current = [];
+
+    // Start fresh animation for each counter
+    fundedCounters.forEach((item, index) => {
+      const target = item.target;
+      const duration = 2000; // Animation duration
+      const startTime = Date.now();
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const current = Math.floor(easeOutQuart * target);
+
+        setDisplayFundedValues(prev => {
+          const newVals = [...prev];
+          newVals[index] = current;
+          return newVals;
+        });
+
+        if (progress < 1) {
+          fundedAnimationRefs.current[index] = requestAnimationFrame(animate);
+        } else {
+          // Animation complete for this counter
+          setDisplayFundedValues(prev => {
+            const newVals = [...prev];
+            newVals[index] = target;
+            return newVals;
+          });
+        }
+      };
+
+      // Staggered animation with delay
+      setTimeout(() => {
+        fundedAnimationRefs.current[index] = requestAnimationFrame(animate);
+      }, index * 300);
+    });
+  };
+
+  // Function to animate both sections
+  const animateAllCounters = () => {
+    animateBusinessCounters();
+    animateFundedCounters();
+  };
+
   useEffect(() => {
     const startSlider = () => {
       if (sliderIntervalRef.current) {
         clearInterval(sliderIntervalRef.current);
       }
-      
+
       sliderIntervalRef.current = setInterval(() => {
         setCurrentSlide((prev) => {
           const nextSlide = (prev + 1) % sliderImages.length;
-          // Trigger slide change animation
           document.querySelectorAll('.slide-container').forEach((container, index) => {
             if (index === nextSlide) {
               container.classList.remove('hidden');
@@ -66,7 +338,7 @@ const Home = () => {
           });
           return nextSlide;
         });
-      }, 4000); // Change slide every 4 seconds
+      }, 8000);
     };
 
     startSlider();
@@ -75,6 +347,13 @@ const Home = () => {
       if (sliderIntervalRef.current) {
         clearInterval(sliderIntervalRef.current);
       }
+      // Clean up animations
+      businessAnimationRefs.current.forEach(ref => {
+        if (ref) cancelAnimationFrame(ref);
+      });
+      fundedAnimationRefs.current.forEach(ref => {
+        if (ref) cancelAnimationFrame(ref);
+      });
     };
   }, [sliderImages.length]);
 
@@ -86,11 +365,12 @@ const Home = () => {
     }
   }, [location.pathname]);
 
+  // Intersection Observer for scroll animations
   useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.1
+      threshold: 0.2
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -100,6 +380,14 @@ const Home = () => {
             ...prev,
             [entry.target.id]: true
           }));
+
+          // Trigger counters animation when impact section is visible
+          if (entry.target.id === 'impact-section' && (!isAnimatingBusiness || !isAnimatingFunded)) {
+            // Small delay to ensure section is fully visible
+            setTimeout(() => {
+              animateAllCounters();
+            }, 300);
+          }
         }
       });
     }, observerOptions);
@@ -113,6 +401,73 @@ const Home = () => {
         if (ref) observer.unobserve(ref);
       });
     };
+  }, [isAnimatingBusiness, isAnimatingFunded]);
+
+  // Total impact counters animation
+  useEffect(() => {
+    const impactSection = document.getElementById('impact-section');
+
+    if (!impactSection) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setCountValues({
+              trained: 0,
+              programs: 0,
+              labs: 0,
+              visits: 0
+            });
+
+            setTimeout(() => {
+              const targetValues = {
+                trained: 36000,
+                programs: 12,
+                labs: 30,
+                visits: 3000
+              };
+
+              const duration = 3000;
+              const startTime = performance.now();
+
+              const animateCount = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+                const easedProgress = easeOutCubic(progress);
+
+                setCountValues({
+                  trained: Math.floor(easedProgress * targetValues.trained),
+                  programs: Math.floor(easedProgress * targetValues.programs),
+                  labs: Math.floor(easedProgress * targetValues.labs),
+                  visits: Math.floor(easedProgress * targetValues.visits)
+                });
+
+                if (progress < 1) {
+                  requestAnimationFrame(animateCount);
+                } else {
+                  setCountValues(targetValues);
+                }
+              };
+
+              requestAnimationFrame(animateCount);
+            }, 100);
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px'
+      }
+    );
+
+    observer.observe(impactSection);
+
+    return () => {
+      observer.unobserve(impactSection);
+    };
   }, []);
 
   const addToRefs = (el, index) => {
@@ -122,18 +477,24 @@ const Home = () => {
   };
 
   const scrollToPrograms = () => {
-    const programsSection = document.getElementById('programs-section');
+    const programsSection = document.getElementById('activities-section');
     if (programsSection) {
-      programsSection.scrollIntoView({ 
+      programsSection.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
     }
   };
 
-  // Manual slide navigation
+  const handleCtaClick = () => {
+    if (currentSlide === 2) {
+      navigate("/contact");
+    } else {
+      scrollToPrograms();
+    }
+  };
+
   const goToSlide = (index) => {
-    // Animate slide transition
     document.querySelectorAll('.slide-container').forEach((container, i) => {
       if (i === index) {
         container.classList.remove('hidden');
@@ -149,188 +510,197 @@ const Home = () => {
         }, 1000);
       }
     });
-    
+
     setCurrentSlide(index);
-    
-    // Reset auto-slide timer
+
     if (sliderIntervalRef.current) {
       clearInterval(sliderIntervalRef.current);
     }
     sliderIntervalRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderImages.length);
-    }, 4000);
-  };
-
-  // Next/Previous slide functions
-  const nextSlide = () => {
-    goToSlide((currentSlide + 1) % sliderImages.length);
-  };
-
-  const prevSlide = () => {
-    goToSlide((currentSlide - 1 + sliderImages.length) % sliderImages.length);
+    }, 8000);
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
+      {/* ================= HERO SLIDER ================= */}
+      <div className="relative w-full h-[90vh] md:h-[95vh] overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+        </div>
 
-      {/* ================= HERO SLIDER SECTION ================= */}
-      <div className="relative w-[100vw] right-88 h-[600px] md:h-[700px] lg:h-[750px] overflow-hidden">
-        {/* Slider Images with animation containers */}
+        {/* Slides */}
         {sliderImages.map((image, index) => (
-          <div
+          <motion.div
             key={index}
-            className={`slide-container absolute inset-0 w-full h-full transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-              index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 hidden'
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{
+              opacity: index === currentSlide ? 1 : 0,
+              scale: index === currentSlide ? 1 : 1.1,
+              filter: index === currentSlide ? "blur(0px)" : "blur(10px)"
+            }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className={`absolute inset-0 w-full h-full ${
+              index === currentSlide ? 'z-10' : 'z-0'
             }`}
-          >
-            <div
-              className="absolute inset-0 w-full h-full animate-fade-in"
-              style={{
-                backgroundImage: `linear-gradient(rgba(15,23,42,0.8), rgba(15,23,42,0.9)), url(${image.src})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
-          </div>
+            style={{
+              backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.95)), url(${image.src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              animation: image.bgAnimation === 'parallax' ? 'parallax 20s linear infinite' : 'zoom 30s linear infinite'
+            }}
+          />
         ))}
 
-        {/* Slider Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 ease-out hover:scale-110 hover:shadow-lg animate-fade-in delay-700"
-          aria-label="Previous slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        </button>
-        
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 ease-out hover:scale-110 hover:shadow-lg animate-fade-in delay-700"
-          aria-label="Next slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-
-        {/* Slider Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3 animate-fade-in delay-1000">
+        {/* Slide Navigation */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
           {sliderImages.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ease-out transform hover:scale-125 ${
-                index === currentSlide 
-                  ? 'bg-white w-10 shadow-lg animate-pulse-slow' 
-                  : 'bg-white/50 hover:bg-white/70'
+              className={`relative w-16 h-2 rounded-full transition-all duration-500 overflow-hidden ${
+                index === currentSlide ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
               }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-white to-blue-300"
+                initial={{ width: "0%" }}
+                animate={{ width: index === currentSlide ? "100%" : "0%" }}
+                transition={{ duration: 5, ease: "linear" }}
+              />
+            </button>
           ))}
         </div>
 
-        {/* Content Overlay */}
+        {/* Hero Content */}
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
-          <div className="mb-8">
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 transition-all duration-1000 ease-out transform ${
-              animate ? "opacity-100 translate-y-0 animate-fade-in-up" : "opacity-0 translate-y-10"
-            }`}>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="max-w-6xl w-full"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
+              <div className="w-2 h-2 bg-gradient-to-r from-sky-400 to-blue-500 rounded-full animate-pulse" />
+              <span className="text-white/90 text-sm font-medium">Welcome to TRUST</span>
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight">
               <span className="block">{sliderImages[currentSlide].title.split(' ')[0]}</span>
-              <span className={`bg-gradient-to-r ${sliderImages[currentSlide].gradient} bg-clip-text text-transparent animate-gradient`}>
+              <motion.span
+                key={currentSlide}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className={`bg-gradient-to-r ${sliderImages[currentSlide].gradient} bg-clip-text text-transparent`}
+              >
                 {sliderImages[currentSlide].title.split(' ').slice(1).join(' ')}
-              </span>
+              </motion.span>
             </h1>
 
-            <p className={`text-gray-200 max-w-3xl mb-10 text-lg md:text-xl transition-all duration-1000 delay-300 ease-out transform ${
-              animate ? "opacity-100 translate-y-0 animate-fade-in-up delay-300" : "opacity-0 translate-y-10"
-            }`}>
-              {sliderImages[currentSlide].subtitle}
-            </p>
-          </div>
-          
-          {/* CTA Buttons */}
-          <div
-            className={`flex flex-col sm:flex-row gap-4 transition-all duration-1000 delay-500 ease-out transform ${
-              animate ? "opacity-100 translate-y-0 animate-fade-in-up delay-500" : "opacity-0 translate-y-10"
-            }`}
-          >
-            <button
-              onClick={scrollToPrograms}
-              className={`px-10 py-4 rounded-full font-semibold text-white
-                bg-gradient-to-r ${sliderImages[currentSlide].gradient}
-                shadow-lg shadow-blue-500/30
-                transition-all duration-300 ease-out transform
-                hover:scale-105 hover:shadow-xl hover:shadow-blue-500/40
-                animate-pulse-slow
-                group
-                relative overflow-hidden`}
+            <motion.p
+              key={currentSlide}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-gray-200 max-w-3xl mx-auto text-xl md:text-2xl mb-10 leading-relaxed font-light px-4"
             >
-              <span className="relative z-10">{sliderImages[currentSlide].cta}</span>
-              <span
-                className="inline-block text-xl px-3 transition-transform duration-300 ease-out
-                  group-hover:translate-x-2 relative z-10"
+              {sliderImages[currentSlide].subtitle}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <button
+                onClick={handleCtaClick}
+                className={`group relative px-12 py-4 rounded-full font-semibold text-white
+                  bg-gradient-to-r ${sliderImages[currentSlide].gradient}
+                  shadow-2xl shadow-blue-500/30
+                  transition-all duration-300
+                  hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/50`}
               >
-                →
-              </span>
-              <span className="absolute inset-0 animate-shimmer"></span>
-            </button>
-          </div>
+                <span className="relative z-10 flex items-center gap-2">
+                  {sliderImages[currentSlide].cta}
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    className="text-xl"
+                  >
+                    →
+                  </motion.span>
+                </span>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              </button>
+            </motion.div>
+          </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-white/50 text-sm">Scroll to explore</span>
+            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/50 rounded-full mt-2" />
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      {/* ================= ABOUT SECTION ================= */}
+      {/* About Section */}
       <section
         ref={(el) => addToRefs(el, 0)}
         id="about-section"
-        className={`relative w-screen left-1/2 -translate-x-1/2 py-24
-          bg-gradient-to-b from-slate-100 to-white overflow-hidden`}
+        className={`w-full py-24 bg-gradient-to-b from-slate-100 to-white`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          {/* Heading */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            className={`text-center mb-20 transition-all duration-1000 ease-out
-              ${scrollAnimations['about-section'] ? "opacity-100 translate-y-0 animate-fade-in-up" : "opacity-0 translate-y-10"}`}
+            className={`text-center mb-20 transition-all duration-1000
+              ${scrollAnimations['about-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 animate-fade-in-up">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 px-4">
               About The Trust
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full animate-scale-in"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full"></div>
           </div>
 
-          {/* Content */}
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            {/* Text */}
+          <div className="grid lg:grid-cols-2 gap-20 items-center px-4 lg:px-0">
             <div
-              className={`transition-all duration-1000 delay-200 ease-out
-                ${scrollAnimations['about-section'] ? "opacity-100 translate-x-0 animate-fade-in-left" : "opacity-0 -translate-x-10"}`}
+              className={`transition-all duration-1000 delay-200
+                ${scrollAnimations['about-section'] ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
             >
-              <h3 className="text-3xl font-semibold text-slate-800 mb-6 animate-fade-in-up delay-300">
+              <h3 className="text-3xl font-semibold text-slate-800 mb-6">
                 Who We Are
               </h3>
-              <p className="text-gray-600 text-lg leading-relaxed mb-6 animate-fade-in-up delay-400">
+              <p className="text-gray-600 text-lg leading-relaxed mb-6">
                 Our Trust is dedicated to fostering excellence in technology and
                 education. We focus on creating a skilled talent pool through
                 specialized training programs, funded projects, and strong industry
                 collaborations.
               </p>
-              <p className="text-gray-600 text-lg leading-relaxed mb-8 animate-fade-in-up delay-500">
+              <p className="text-gray-600 text-lg leading-relaxed mb-8">
                 Our mission is to bridge the skill gap and empower individuals and
                 organizations with the tools, confidence, and knowledge needed to
                 thrive in the digital age.
               </p>
-              {/* Highlights */}
               <div className="flex flex-wrap gap-4">
                 {['Skill Development', 'Industry Collaboration', 'Future Ready'].map((item, idx) => (
-                  <span 
+                  <span
                     key={item}
-                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-500 delay-${idx * 100 + 600} ease-out transform
-                      ${scrollAnimations['about-section'] ? 'opacity-100 scale-100 animate-scale-in' : 'opacity-0 scale-95'}
-                      ${idx === 0 ? 'bg-sky-100 text-sky-700' : 
-                         idx === 1 ? 'bg-blue-100 text-blue-700' : 
-                         'bg-indigo-100 text-indigo-700'}`}
-                    style={{ animationDelay: `${idx * 100 + 600}ms` }}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-500
+                      ${scrollAnimations['about-section'] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+                      ${idx === 0 ? 'bg-sky-100 text-sky-700' :
+                        idx === 1 ? 'bg-blue-100 text-blue-700' :
+                          'bg-indigo-100 text-indigo-700'}`}
+                    style={{ transitionDelay: `${idx * 100}ms` }}
                   >
                     {item}
                   </span>
@@ -338,82 +708,78 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Image */}
             <div
-              className={`relative transition-all duration-1000 delay-400 ease-out animate-float
-                ${scrollAnimations['about-section'] ? "opacity-100 translate-x-0 animate-fade-in-right" : "opacity-0 translate-x-10"}`}
+              className={`relative transition-all duration-1000 delay-400 hover:-translate-y-4 hover:shadow-2xl hover:shadow-sky-500/20
+                ${scrollAnimations['about-section'] ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}
             >
-              <div className="absolute -inset-6 bg-gradient-to-r from-sky-200 to-blue-200 rounded-3xl blur-3xl opacity-20 animate-pulse-slow"></div>
+              <div className="absolute -inset-6 bg-gradient-to-r from-sky-200 to-blue-200 rounded-3xl blur-3xl opacity-20"></div>
               <img
                 src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
                 alt="About Trust"
-                className="relative w-full rounded-3xl shadow-2xl object-cover hover:scale-105 transition-all duration-700 ease-out"
+                className="relative w-full h-[400px] object-cover rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= CAPACITY BUILDING IMPACT SECTION ================= */}
+      {/* Capacity Building Impact Section */}
       <section
         ref={(el) => addToRefs(el, 1)}
         id="impact-section"
-        className="relative w-screen left-1/2 -translate-x-1/2 py-24 bg-gradient-to-b from-white to-slate-50"
+        className="w-full py-24 bg-gradient-to-b from-white to-slate-50"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Heading */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            className={`text-center mb-16 transition-all duration-1000 ease-out
-              ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0 animate-fade-in-up" : "opacity-0 translate-y-10"}`}
+            className={`text-center mb-16 transition-all duration-1000
+              ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 animate-fade-in-up">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 px-4">
               Our Impact & Reach
             </h2>
-            <p className="text-gray-600 max-w-3xl mx-auto text-lg animate-fade-in-up delay-200">
+            <p className="text-gray-600 max-w-3xl mx-auto text-lg px-4">
               Empowering thousands through skill development and capacity building initiatives
             </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full animate-scale-in delay-400"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full"></div>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 px-4 sm:px-0">
             {/* Business Capacity Building Card */}
             <div
-              className={`bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-700 delay-200 ease-out transform
-                ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0 animate-scale-in" : "opacity-0 translate-y-10"}
-                hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}
+              className={`bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-700 delay-200
+                ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+                hover:shadow-2xl hover:-translate-y-2`}
             >
-              <div className="flex items-center mb-6 animate-fade-in-up">
-                <div className="bg-sky-100 text-sky-600 p-3 rounded-xl mr-4 animate-bounce-slow">
+              <div className="flex items-center mb-6 flex-wrap">
+                <div className="bg-sky-100 text-sky-600 p-3 rounded-xl mr-4 shrink-0">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800">Business Capacity Building Activities</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-slate-800 leading-tight">
+                  Business Capacity Building Activities
+                </h3>
               </div>
-              
+
               <div className="space-y-4">
-                {[
-                  { name: "PG Diploma", desc: "6 months PGD course", count: "1,797" },
-                  { name: "Master's Courses", desc: "4 months training for Master's courses", count: "50" },
-                  { name: "Practicum", desc: "Training for minority candidates", count: "196" },
-                  { name: "Experiential Learning", desc: "4-7 days industry relevant training", count: "2,000" },
-                  { name: "Corporate Trainings", desc: "1-2 weeks trainings", count: "350" },
-                  { name: "Establishment of Labs", desc: "Research Lab setup", count: "30+ lab kits deployed" },
-                  { name: "Industrial Visits", desc: "2-hour interactive session", count: "3,000+" }
-                ].map((item, index) => (
-                  <div 
+                {businessCounters.map((item, index) => (
+                  <div
                     key={index}
-                    className="flex justify-between items-center p-4 rounded-lg hover:bg-slate-50 transition-all duration-300 ease-out border border-transparent hover:border-slate-200 group hover:scale-[1.02] animate-fade-in-up"
-                    style={{ animationDelay: `${index * 100 + 300}ms` }}
+                    className="flex justify-between items-start md:items-center p-4 rounded-lg hover:bg-slate-50 transition-colors duration-300 border border-transparent hover:border-slate-200 group"
                   >
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-slate-800 group-hover:text-sky-700 transition-colors">{item.name}</h4>
-                      <p className="text-sm text-slate-500 mt-1">{item.desc}</p>
+                    <div className="flex-1 min-w-0 pr-4">
+                      <h4 className="font-semibold text-slate-800 group-hover:text-sky-700 transition-colors text-sm md:text-base leading-snug">
+                        {item.name}
+                      </h4>
+                      <p className="text-xs md:text-sm text-slate-500 mt-1 leading-relaxed">
+                        {item.desc}
+                      </p>
                     </div>
-                    <div className="ml-4">
-                      <span className="bg-sky-100 text-sky-700 font-bold px-3 py-1 rounded-full text-sm whitespace-nowrap hover:scale-110 transition-transform duration-300 ease-out">
-                        {item.count}
+                    <div className="flex-shrink-0 pl-2">
+                      <span className="bg-sky-100 text-sky-700 font-bold px-3 py-1 rounded-full text-xs md:text-sm whitespace-nowrap inline-block transition-all duration-300">
+                        {displayBusinessValues[index].toLocaleString()}
+                        {item.hasPlus && '+'}
+                        {item.extraText || ''}
                       </span>
                     </div>
                   </div>
@@ -423,39 +789,39 @@ const Home = () => {
 
             {/* Funded Capacity Building Card */}
             <div
-              className={`bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-700 delay-400 ease-out transform
-                ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0 animate-scale-in" : "opacity-0 translate-y-10"}
-                hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}
+              className={`bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-700 delay-400
+                ${scrollAnimations['impact-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+                hover:shadow-2xl hover:-translate-y-2`}
             >
-              <div className="flex items-center mb-6 animate-fade-in-up">
-                <div className="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 animate-bounce-slow">
+              <div className="flex items-center mb-6 flex-wrap">
+                <div className="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4 shrink-0">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800">Funded Capacity Building Activities</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-slate-800 leading-tight">
+                  Funded Capacity Building Activities
+                </h3>
               </div>
-              
+
               <div className="space-y-4">
-                {[
-                  { name: "ISEA Phase-III", desc: "Awareness program in Cyber security", count: "10,000+" },
-                  { name: "FutureSkills Prime", desc: "MeitY and NASSCOM project (Lead Resource Centre for IoT)", count: "2,400" },
-                  { name: "SC-ST IoT BLP Upskilling", desc: "Offered in Blended learning mode", count: "17,800+" },
-                  { name: "Work-based Learning", desc: "6-month stipend-based internship", count: "105" },
-                  { name: "C-HUK", desc: "Offered in Offline mode with varied training types", count: "2,500+" }
-                ].map((item, index) => (
-                  <div 
+                {fundedCounters.map((item, index) => (
+                  <div
                     key={index}
-                    className="flex justify-between items-center p-4 rounded-lg hover:bg-slate-50 transition-all duration-300 ease-out border border-transparent hover:border-slate-200 group hover:scale-[1.02] animate-fade-in-up"
-                    style={{ animationDelay: `${index * 100 + 500}ms` }}
+                    className="flex justify-between items-start md:items-center p-4 rounded-lg hover:bg-slate-50 transition-colors duration-300 border border-transparent hover:border-slate-200 group"
                   >
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors">{item.name}</h4>
-                      <p className="text-sm text-slate-500 mt-1">{item.desc}</p>
+                    <div className="flex-1 min-w-0 pr-4">
+                      <h4 className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors text-sm md:text-base leading-snug">
+                        {item.name}
+                      </h4>
+                      <p className="text-xs md:text-sm text-slate-500 mt-1 leading-relaxed">
+                        {item.desc}
+                      </p>
                     </div>
-                    <div className="ml-4">
-                      <span className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm whitespace-nowrap hover:scale-110 transition-transform duration-300 ease-out">
-                        {item.count}
+                    <div className="flex-shrink-0 pl-2">
+                      <span className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-xs md:text-sm whitespace-nowrap inline-block transition-all duration-300">
+                        {displayFundedValues[index].toLocaleString()}
+                        {item.hasPlus && '+'}
                       </span>
                     </div>
                   </div>
@@ -466,23 +832,22 @@ const Home = () => {
 
           {/* Total Impact Summary */}
           <div
-            className={`mt-12 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl p-8 text-center transition-all duration-700 delay-600 ease-out transform
-              ${scrollAnimations['impact-section'] ? "opacity-100 scale-100 animate-scale-in" : "opacity-0 scale-95"}
-              hover:scale-[1.02] hover:shadow-xl`}
+            className={`mt-12 bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl p-6 md:p-8 text-center transition-all duration-700 delay-600 mx-4 sm:mx-0
+              ${scrollAnimations['impact-section'] ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
           >
-            <h3 className="text-2xl font-bold text-slate-800 mb-6 animate-fade-in-up">Total Impact</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-6">Total Impact</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
               {[
-                { label: "Total Trained", value: "36,000+", color: "sky", icon: "👥" },
-                { label: "Programs Offered", value: "12+", color: "blue", icon: "📚" },
-                { label: "Lab Kits Deployed", value: "30+", color: "indigo", icon: "🔬" },
-                { label: "Industrial Visits", value: "3,000+", color: "green", icon: "🏭" }
-              ].map((stat, index) => (
-                <div key={index} className="text-center transform hover:scale-110 transition-transform duration-300 ease-out animate-fade-in-up" 
-                     style={{ animationDelay: `${index * 100 + 700}ms` }}>
-                  <div className="text-4xl mb-2 animate-bounce-slow">{stat.icon}</div>
-                  <div className={`text-3xl md:text-4xl font-bold text-${stat.color}-600 mb-2 animate-pulse-slow`}>{stat.value}</div>
-                  <div className="text-slate-600 font-medium">{stat.label}</div>
+                { label: "Total Trained", value: countValues.trained, color: "sky" },
+                { label: "Programs Offered", value: countValues.programs, color: "blue" },
+                { label: "Lab Kits Deployed", value: countValues.labs, color: "indigo" },
+                { label: "Industrial Visits", value: countValues.visits, color: "green" }
+              ].map((item, index) => (
+                <div key={index} className="text-center p-4">
+                  <div className={`text-3xl md:text-4xl font-bold text-${item.color}-600 mb-2`}>
+                    {item.value.toLocaleString()}+
+                  </div>
+                  <div className="text-slate-600 font-medium text-sm md:text-base">{item.label}</div>
                 </div>
               ))}
             </div>
@@ -490,145 +855,80 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ================= PROGRAMS SECTION ================= */}
+      {/* Activities Section */}
       <section
         ref={(el) => addToRefs(el, 2)}
-        id="programs-section"
-        className={`relative w-screen left-1/2 -translate-x-1/2 bg-slate-900 py-16 md:py-20 lg:py-24
+        id="activities-section"
+        className={`w-full bg-slate-900 py-16 md:py-20 lg:py-24
           transition-all duration-1000 ease-out`}
       >
-        <div className="px-4 sm:px-6 md:px-12 lg:px-20">
-          {/* Heading */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2
-            className={`text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-4
+            className={`text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-4 px-4
               transition-all duration-1000 ease-out
-              ${scrollAnimations['programs-section'] ? "opacity-100 translate-y-0 animate-fade-in-up" : "opacity-0 translate-y-10"}`}
+              ${scrollAnimations['activities-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            Upcoming Programs
+            Activities
           </h2>
 
           <p
-            className={`text-center text-gray-300 max-w-2xl sm:max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-14 text-sm sm:text-base
-              transition-all duration-1000 delay-200 ease-out
-              ${scrollAnimations['programs-section'] ? "opacity-100 translate-y-0 animate-fade-in-up delay-200" : "opacity-0 translate-y-10"}`}
+            className={`text-center text-gray-300 max-w-2xl sm:max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-14 text-sm sm:text-base px-4
+              transition-all duration-1000 delay-200
+              ${scrollAnimations['activities-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            We offer a diverse range of programs designed to build technical prowess
-            and real-world skills.
+            We offer diverse capacity building initiatives designed to empower individuals and organizations with cutting-edge skills.
           </p>
 
-          {/* Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-            {[
-              { 
-                title: "PG Diploma Courses", 
-                desc: "Advanced diploma programs delivering deep technical expertise and hands-on experience.",
-                emoji: "🎓",
-                color: "sky",
-                delay: 300,
-                link: "/programs/pg-diploma",
-                linkText: "View Courses"
-              },
-              { 
-                title: "Master's Courses", 
-                desc: "Comprehensive programs for advanced knowledge and research-oriented learning.",
-                emoji: "🎓",
-                color: "blue",
-                delay: 400,
-                link: "/master",
-                linkText: "Explore Programs"
-              },
-              { 
-                title: "Practicum", 
-                desc: "Hands-on learning experiences to apply theoretical knowledge in real projects.",
-                emoji: "🛠️",
-                color: "indigo",
-                delay: 500,
-                link: "/practium",
-                linkText: "Learn More"
-              },
-              { 
-                title: "Experiential Learning", 
-                desc: "Interactive programs focusing on learning by doing and real-world exposure.",
-                emoji: "🌱",
-                color: "sky",
-                delay: 600,
-                link: "/expermential",
-                linkText: "Discover"
-              },
-              { 
-                title: "Corporate Trainings", 
-                desc: "Industry-focused training solutions tailored to empower and upskill corporate teams.",
-                emoji: "🏢",
-                color: "blue",
-                delay: 700,
-                link: "/programs/corporate-trainings",
-                linkText: "Get Details"
-              },
-              { 
-                title: "Establishment of Labs", 
-                desc: "State-of-the-art labs to provide practical experience with modern technologies.",
-                emoji: "🧪",
-                color: "indigo",
-                delay: 800,
-                link: "/programs/establishment-of-labs",
-                linkText: "View Options"
-              },
-              { 
-                title: "Industrial Visits", 
-                desc: "Exposure visits to industries to gain practical knowledge and industry insights.",
-                emoji: "🏭",
-                color: "green",
-                delay: 900,
-                link: "/programs/industrial-visits",
-                linkText: "Schedule Visit"
-              },
-            ].map((program, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-0">
+            {activitiesData.map((activity, index) => (
               <div
                 key={index}
                 className={`group bg-slate-800/80 backdrop-blur p-6 sm:p-8 rounded-xl sm:rounded-2xl border border-slate-700
-                  transition-all duration-700 delay-${program.delay} ease-out
-                  ${scrollAnimations['programs-section'] ? "opacity-100 translate-y-0 animate-scale-in" : "opacity-0 translate-y-10"}
+                  transition-all duration-700 min-h-[220px] sm:min-h-[260px] flex flex-col
+                  ${scrollAnimations['activities-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
                   hover:-translate-y-2 sm:hover:-translate-y-4 hover:shadow-lg sm:hover:shadow-2xl hover:shadow-sky-500/20`}
                 style={{
-                  transitionDelay: `${program.delay}ms`,
-                  animationDelay: `${program.delay}ms`
+                  transitionDelay: `${activity.delay}ms`
                 }}
               >
-                <div className={`text-${program.color}-400 text-3xl sm:text-4xl mb-3 sm:mb-4 transition-transform duration-500 ease-out group-hover:scale-110 animate-bounce-slow`}>
-                  {program.emoji}
+                <div className="flex justify-between items-start mb-4">
+                  <div className={`text-${activity.color}-400 text-3xl sm:text-4xl mb-3 sm:mb-4 transition-transform duration-500 group-hover:scale-110`}>
+                    {activity.emoji}
+                  </div>
+                  <div className="bg-slate-700/50 px-3 py-1 rounded-full shrink-0 ml-2">
+                    <span className="text-sm font-semibold text-white">{activity.count}</span>
+                  </div>
                 </div>
-                
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white animate-fade-in-up">
-                  {program.title}
+
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white leading-tight">
+                  {activity.title}
                 </h3>
-                
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 animate-fade-in-up delay-100">
-                  {program.desc}
+
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow">
+                  {activity.desc}
                 </p>
-                
-                {/* Visit Link Button */}
+
                 <div className="mt-auto">
                   <a
-                    href={program.link}
+                    href={activity.link}
                     className={`inline-flex items-center justify-center 
-                      bg-gradient-to-r from-${program.color}-500 to-${program.color}-600
-                      hover:from-${program.color}-600 hover:to-${program.color}-700
+                      bg-gradient-to-r from-${activity.color}-500 to-${activity.color}-600
+                      hover:from-${activity.color}-600 hover:to-${activity.color}-700
                       text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg 
-                      font-medium transition-all duration-300 ease-out
+                      font-medium transition-all duration-300 
                       hover:scale-105 hover:shadow-lg
-                      text-sm sm:text-base
-                      ${scrollAnimations['programs-section'] ? "opacity-100 animate-fade-in-up" : "opacity-0"}`}
+                      text-sm sm:text-base w-full sm:w-auto
+                      ${scrollAnimations['activities-section'] ? "opacity-100" : "opacity-0"}`}
                     style={{
-                      transitionDelay: `${program.delay + 100}ms`,
-                      animationDelay: `${program.delay + 100}ms`
+                      transitionDelay: `${activity.delay + 100}ms`
                     }}
                   >
-                    {program.linkText}
-                    <svg 
-                      className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-out group-hover:translate-x-1" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24" 
+                    {activity.linkText}
+                    <svg
+                      className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -640,29 +940,28 @@ const Home = () => {
           </div>
         </div>
       </section>
- <section
+
+      {/* Events Section */}
+      <section
         ref={(el) => addToRefs(el, 3)}
         id="events-section"
-        className={`relative w-screen left-1/2 -translate-x-1/2 py-24
-  bg-gradient-to-b from-white to-slate-100`}
+        className={`w-full py-24 bg-gradient-to-b from-white to-slate-100`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          {/* Heading */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
             className={`text-center mb-20 transition-all duration-1000
-      ${scrollAnimations['events-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+              ${scrollAnimations['events-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 px-4">
               Recent & Upcoming Events
             </h2>
-            <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+            <p className="text-gray-600 max-w-3xl mx-auto text-lg px-4">
               Join us for our outreach activities, conferences, and workshops.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full"></div>
           </div>
 
-          {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-20 px-4 md:px-0">
             {[
               {
                 date: "August 5, 2025",
@@ -692,9 +991,9 @@ const Home = () => {
               <div
                 key={index}
                 className={`group bg-white rounded-3xl overflow-hidden shadow-lg
-        transition-all duration-700 delay-${event.delay}
-        ${scrollAnimations['events-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-        hover:-translate-y-4 hover:shadow-2xl hover:shadow-${event.color}-500/20`}
+                  transition-all duration-700
+                  ${scrollAnimations['events-section'] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+                  hover:-translate-y-4 hover:shadow-2xl hover:shadow-${event.color}-500/20`}
                 style={{
                   transitionDelay: `${event.delay}ms`
                 }}
@@ -708,7 +1007,7 @@ const Home = () => {
                   <span className={`inline-block mb-3 text-sm font-medium text-${event.color}-600 bg-${event.color}-100 px-4 py-1 rounded-full`}>
                     {event.date}
                   </span>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3 leading-tight">
                     {event.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
@@ -721,17 +1020,7 @@ const Home = () => {
         </div>
       </section>
 
-      <style jsx>{`
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.8; }
-        }
-        
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        
+      <style jsx global>{`
         @keyframes slideIn {
           from {
             opacity: 0;
@@ -754,126 +1043,6 @@ const Home = () => {
           }
         }
         
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        @keyframes fadeInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        
-        @keyframes shimmer {
-          0% {
-            background-position: -200% center;
-          }
-          100% {
-            background-position: 200% center;
-          }
-        }
-        
-        @keyframes gradient {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-        
-        .animate-pulse-slow {
-          animation: pulse-slow 2s ease-in-out infinite;
-        }
-        
-        .animate-bounce-slow {
-          animation: bounce-slow 2s ease-in-out infinite;
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        .animate-shimmer {
-          background: linear-gradient(90deg, 
-            transparent 0%, 
-            rgba(255,255,255,0.1) 50%, 
-            transparent 100%);
-          background-size: 200% 100%;
-          animation: shimmer 2s infinite linear;
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        .animate-fade-in-left {
-          animation: fadeInLeft 0.8s ease-out forwards;
-        }
-        
-        .animate-fade-in-right {
-          animation: fadeInRight 0.8s ease-out forwards;
-        }
-        
-        .animate-fade-in {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        .animate-scale-in {
-          animation: scaleIn 0.8s ease-out forwards;
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-        
         .slide-in {
           animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -882,55 +1051,88 @@ const Home = () => {
           animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
+        /* Remove any max-width constraints */
+        #root, .App, main, .main-container {
+          max-width: 100% !important;
+          width: 100% !important;
+        }
+        
+        /* Ensure sections take full width */
+        section {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+        }
+        
+        /* Ensure inner containers also take full width */
+        section > div {
+          width: 100% !important;
+        }
+        
         /* Smooth scroll behavior */
         html {
           scroll-behavior: smooth;
         }
         
-        /* Smooth transitions for all elements */
-        * {
-          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        /* Text alignment fixes */
+        .max-w-7xl {
+          max-width: 80rem !important;
         }
         
-        /* Animation delays */
-        .delay-100 {
-          animation-delay: 100ms;
+        .min-w-0 {
+          min-width: 0 !important;
         }
         
-        .delay-200 {
-          animation-delay: 200ms;
+        .leading-snug {
+          line-height: 1.375 !important;
         }
         
-        .delay-300 {
-          animation-delay: 300ms;
+        .leading-relaxed {
+          line-height: 1.625 !important;
         }
         
-        .delay-400 {
-          animation-delay: 400ms;
+        .leading-tight {
+          line-height: 1.25 !important;
         }
         
-        .delay-500 {
-          animation-delay: 500ms;
+        .flex-grow {
+          flex-grow: 1 !important;
         }
         
-        .delay-600 {
-          animation-delay: 600ms;
+        /* Ensure text doesn't overflow */
+        .text-balance {
+          text-wrap: balance !important;
         }
         
-        .delay-700 {
-          animation-delay: 700ms;
+        /* Improve mobile text alignment */
+        @media (max-width: 640px) {
+          .text-sm {
+            font-size: 0.875rem !important;
+            line-height: 1.25rem !important;
+          }
+          
+          .text-xs {
+            font-size: 0.75rem !important;
+            line-height: 1rem !important;
+          }
+          
+          h1, h2, h3, h4 {
+            text-align: center !important;
+          }
+          
+          .px-4 {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+          }
         }
         
-        .delay-800 {
-          animation-delay: 800ms;
-        }
-        
-        .delay-900 {
-          animation-delay: 900ms;
-        }
-        
-        .delay-1000 {
-          animation-delay: 1000ms;
+        @media (max-width: 768px) {
+          .gap-20 {
+            gap: 3rem !important;
+          }
         }
       `}</style>
     </div>

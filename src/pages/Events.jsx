@@ -86,7 +86,7 @@ const Events = () => {
   };
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full mt-10 min-h-screen">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-slate-900 to-blue-900 text-white py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

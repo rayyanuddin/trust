@@ -155,7 +155,7 @@ const Practium = () => {
                   className={`flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg transition-all duration-300 text-xs sm:text-sm md:text-base ${
                     activeTab === tab.id
                       ? "bg-blue-600 text-white shadow-lg"
-                      : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
+                      : "bg-white text-slate-700 hover:bg-slate-100 hover:cursor-pointer shadow-sm"
                   }`}
                 >
                   <span className="mr-1.5 sm:mr-2">{tab.icon}</span>

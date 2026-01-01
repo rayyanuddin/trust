@@ -8,14 +8,15 @@ const Navbar = () => {
   const [businessActivityOpen, setBusinessActivityOpen] = useState(false);
   const [fundedActivityOpen, setFundedActivityOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
+  const [programsOpen, setProgramsOpen] = useState(false);
   const location = useLocation();
 
-  const links = ["Home", "About", "Activity", "Projects","Programs", "Events", "Contact"];
+  const links = ["Home", "About", "Activity", "Programs", "Projects", "Events", "Contact"];
 
   const businessActivityItems = [
     { 
-      name: "PG Diploma", 
-      path: "/programs/pg-diploma" 
+      name: "PG Certificate Programmes", 
+      path: "/pgdiploma" 
     },
     { 
       name: "Master's Courses", 
@@ -31,11 +32,11 @@ const Navbar = () => {
     },
     { 
       name: "Corporate Trainings", 
-      path: "/programs/corporate-trainings" 
+      path: "/coporate" 
     },
     { 
       name: "Establishment of Labs", 
-      path: "/programs/establishment-of-labs" 
+      path: "/elabs" 
     },
     { 
       name: "Industrial Visits", 
@@ -50,7 +51,7 @@ const Navbar = () => {
     },
     { 
       name: "FutureSkills Prime", 
-      path: "/funded/futureskills-prime" 
+      path: "/future" 
     },
     { 
       name: "SC-ST IoT BLP Upskilling", 
@@ -58,18 +59,18 @@ const Navbar = () => {
     },
     { 
       name: "Work-based Learning", 
-      path: "/funded/work-based-learning" 
+      path: "/wbl" 
     },
     { 
       name: "C-HUK", 
-      path: "/funded/c-huk" 
+      path: "/chuk" 
     },
   ];
 
   const projectsItems = [
     { 
       name: "MEPZ – C-DAC Skill Development Center", 
-      path: "/projects/mepz-cdac" 
+      path: "/mepz" 
     },
     { 
       name: "IDoT", 
@@ -81,11 +82,22 @@ const Navbar = () => {
     },
     { 
       name: "Experiential Center", 
-      path: "/projects/experiential-center" 
+      path: "/centre" 
     },
     { 
       name: "ACTS Management Systems – LMS development", 
-      path: "/projects/acts-lms" 
+      path: "/acts" 
+    },
+  ];
+
+  const programsItems = [
+    { 
+      name: "I-LABS", 
+      path: "/labs" 
+    },
+    { 
+      name: "Faculty Industrial Immersion Program (FIIP)", 
+      path: "/fiip" 
     },
   ];
 
@@ -100,6 +112,7 @@ const Navbar = () => {
     setBusinessActivityOpen(false);
     setFundedActivityOpen(false);
     setProjectsOpen(false);
+    setProgramsOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -184,6 +197,32 @@ const Navbar = () => {
                   </div>
                 </div>
               );
+            } else if (link === "Programs") {
+              return (
+                <div key={link} className="relative group">
+                  <button className="px-3 py-2 rounded-md hover:bg-sky-500 transition flex items-center gap-1">
+                    Programs
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+
+                  <div className="absolute left-0 top-full mt-2 w-64 bg-slate-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    {programsItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={handleClose}
+                        className={`block px-4 py-3 text-sm hover:bg-sky-500 transition border-b border-slate-700 last:border-b-0 ${
+                          isActive(item.path) ? "bg-sky-600" : ""
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
             } else if (link === "Projects") {
               return (
                 <div key={link} className="relative group">
@@ -240,49 +279,49 @@ const Navbar = () => {
 
       {/* MOBILE MENU */}
       <div
-        className={`md:hidden fixed inset-x-0 top-16 bg-slate-800 transition-all duration-300 ${
-          isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-5 pointer-events-none"
+        className={`md:hidden fixed inset-0 top-16 bg-slate-900 transition-all duration-300 ${
+          isOpen ? "opacity-100 translate-y-0 h-[calc(100vh-64px)] overflow-y-auto" : "opacity-0 -translate-y-5 pointer-events-none"
         }`}
       >
-        <div className="px-4 py-4 space-y-2">
+        <div className="px-6 py-8 space-y-4 flex flex-col items-center h-full">
           {links.map((link) => {
             if (link === "Activity") {
               return (
-                <div key={link} className="text-center">
+                <div key={link} className="w-full max-w-xs">
                   <button
                     onClick={() => setActivityOpen(!activityOpen)}
-                    className="inline-flex justify-center items-center px-4 py-2 rounded-md hover:bg-sky-500 w-full gap-2"
+                    className="flex justify-between items-center px-6 py-4 rounded-lg hover:bg-slate-800 w-full text-lg font-medium"
                   >
-                    Activity 
-                    <svg className={`w-4 h-4 transition-transform ${activityOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    {link}
+                    <svg className={`w-5 h-5 transition-transform ${activityOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </button>
 
                   {activityOpen && (
-                    <div className="mt-2 space-y-1 ml-4">
+                    <div className="mt-3 space-y-3 ml-4">
                       
                       {/* Business Activity Mobile */}
-                      <div className="mb-2">
+                      <div>
                         <button
                           onClick={() => setBusinessActivityOpen(!businessActivityOpen)}
-                          className="inline-flex justify-between items-center px-4 py-2 rounded-md hover:bg-slate-700 w-full"
+                          className="flex justify-between items-center px-4 py-3 rounded-md hover:bg-slate-800 w-full text-left text-base"
                         >
-                          <span>Business Activity</span>
+                          Business Activity
                           <svg className={`w-4 h-4 transition-transform ${businessActivityOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                           </svg>
                         </button>
                         
                         {businessActivityOpen && (
-                          <div className="mt-1 ml-4 space-y-1">
+                          <div className="mt-2 ml-4 space-y-2">
                             {businessActivityItems.map((item) => (
                               <Link
                                 key={item.name}
                                 to={item.path}
                                 onClick={handleClose}
-                                className={`block px-4 py-2 rounded-md hover:bg-sky-500 text-sm ${
-                                  isActive(item.path) ? "bg-sky-600" : ""
+                                className={`block px-4 py-3 rounded-md hover:bg-sky-600 text-sm ${
+                                  isActive(item.path) ? "bg-sky-700" : ""
                                 }`}
                               >
                                 {item.name}
@@ -296,23 +335,23 @@ const Navbar = () => {
                       <div>
                         <button
                           onClick={() => setFundedActivityOpen(!fundedActivityOpen)}
-                          className="inline-flex justify-between items-center px-4 py-2 rounded-md hover:bg-slate-700 w-full"
+                          className="flex justify-between items-center px-4 py-3 rounded-md hover:bg-slate-800 w-full text-left text-base"
                         >
-                          <span>Funded Activity</span>
+                          Funded Activity
                           <svg className={`w-4 h-4 transition-transform ${fundedActivityOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                           </svg>
                         </button>
                         
                         {fundedActivityOpen && (
-                          <div className="mt-1 ml-4 space-y-1">
+                          <div className="mt-2 ml-4 space-y-2">
                             {fundedActivityItems.map((item) => (
                               <Link
                                 key={item.name}
                                 to={item.path}
                                 onClick={handleClose}
-                                className={`block px-4 py-2 rounded-md hover:bg-sky-500 text-sm ${
-                                  isActive(item.path) ? "bg-sky-600" : ""
+                                className={`block px-4 py-3 rounded-md hover:bg-sky-600 text-sm ${
+                                  isActive(item.path) ? "bg-sky-700" : ""
                                 }`}
                               >
                                 {item.name}
@@ -325,28 +364,59 @@ const Navbar = () => {
                   )}
                 </div>
               );
+            } else if (link === "Programs") {
+              return (
+                <div key={link} className="w-full max-w-xs">
+                  <button
+                    onClick={() => setProgramsOpen(!programsOpen)}
+                    className="flex justify-between items-center px-6 py-4 rounded-lg hover:bg-slate-800 w-full text-lg font-medium"
+                  >
+                    {link}
+                    <svg className={`w-5 h-5 transition-transform ${programsOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+
+                  {programsOpen && (
+                    <div className="mt-3 ml-4 space-y-2">
+                      {programsItems.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          onClick={handleClose}
+                          className={`block px-4 py-3 rounded-md hover:bg-sky-600 text-sm ${
+                            isActive(item.path) ? "bg-sky-700" : ""
+                          }`}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
             } else if (link === "Projects") {
               return (
-                <div key={link} className="text-center">
+                <div key={link} className="w-full max-w-xs">
                   <button
                     onClick={() => setProjectsOpen(!projectsOpen)}
-                    className="inline-flex justify-center items-center px-4 py-2 rounded-md hover:bg-sky-500 w-full gap-2"
+                    className="flex justify-between items-center px-6 py-4 rounded-lg hover:bg-slate-800 w-full text-lg font-medium"
                   >
-                    Projects
-                    <svg className={`w-4 h-4 transition-transform ${projectsOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    {link}
+                    <svg className={`w-5 h-5 transition-transform ${projectsOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </button>
 
                   {projectsOpen && (
-                    <div className="mt-2 ml-4 space-y-1">
+                    <div className="mt-3 ml-4 space-y-2">
                       {projectsItems.map((item) => (
                         <Link
                           key={item.name}
                           to={item.path}
                           onClick={handleClose}
-                          className={`block px-4 py-2 rounded-md hover:bg-sky-500 text-sm ${
-                            isActive(item.path) ? "bg-sky-600" : ""
+                          className={`block px-4 py-3 rounded-md hover:bg-sky-600 text-sm ${
+                            isActive(item.path) ? "bg-sky-700" : ""
                           }`}
                         >
                           {item.name}
@@ -361,8 +431,8 @@ const Navbar = () => {
                 <Link
                   key={link}
                   to={link === "Home" ? "/" : `/${link.toLowerCase()}`}
-                  className={`block px-3 py-2 rounded-md hover:bg-sky-500 text-center ${
-                    isActive(link === "Home" ? "/" : `/${link.toLowerCase()}`) ? "bg-sky-500" : ""
+                  className={`block px-6 py-4 rounded-lg hover:bg-slate-800 w-full max-w-xs text-center text-lg font-medium ${
+                    isActive(link === "Home" ? "/" : `/${link.toLowerCase()}`) ? "bg-sky-600" : ""
                   }`}
                   onClick={handleClose}
                 >

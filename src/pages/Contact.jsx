@@ -305,7 +305,7 @@ const Contact = () => {
               </a>
 
               <a 
-                href="/programs"
+                href="/#programs-section"
                 className="bg-white border border-slate-200 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center hover:shadow-md transition-all duration-300 group"
               >
                 <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-100 text-green-600 rounded-lg mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">
