@@ -24,6 +24,11 @@ import Centre from './project/Centre';
 import Fiip from './aprogram/Fiip';
 import Mepz from './project/Mepz';
 import Acts from './project/Acts';
+import Isea from './activity/Isea';
+import Industries from './programs/Industries';
+import Idot from './project/Idot';
+import Pkot from './project/Pkot';
+import Sci from './Events/Sci';
 function App() {
 
 
@@ -52,6 +57,11 @@ function App() {
             <Route path="/fiip" element={<Fiip />} />
               <Route path="/mepz" element={<Mepz/>} />
                  <Route path="/acts" element={<Acts/>} />
+                          <Route path="/isea" element={<Isea/>} />
+                            <Route path="/industries" element={<Industries/>} />
+                            <Route path="/idot" element={<Idot/>} />
+                             <Route path="/pkiot" element={<Pkot/>} />
+                               <Route path="/sci" element={<Sci/>} />
           </Routes>
         </main>
         <Footer />

@@ -1,17 +1,120 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-const Coporate = () => {
+const Corporate = () => {
   const [activeCard, setActiveCard] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredQuarter, setHoveredQuarter] = useState(null);
-  const [statsAnimated, setStatsAnimated] = useState(Array(4).fill(false));
+  
+  // Stats for animation
+  const [stats, setStats] = useState({
+    currentTrainees: 0,
+    modulesAvailable: 0,
+    trainingYear: 0,
+    customizability: 0
+  });
+
+  const targetStats = {
+    currentTrainees: 10,
+    modulesAvailable: 50,
+    trainingYear: 2026,
+    customizability: 100
+  };
+
+  // Use ref to track if animation has run
+  const animationRunRef = useRef(false);
+
+  const animateCount = (start, end, duration, statKey) => {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      const currentValue = start + easeOutCubic * (end - start);
+      
+      setStats(prev => ({
+        ...prev,
+        [statKey]: currentValue
+      }));
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  };
+
+  const triggerAnimation = () => {
+    // Reset stats to 0
+    setStats({
+      currentTrainees: 0,
+      modulesAvailable: 0,
+      trainingYear: 2000, // Start from 2000 for year animation
+      customizability: 0
+    });
+    
+    // Small delay to ensure reset is visible
+    setTimeout(() => {
+      // Animate all stats with staggered delays
+      animateCount(0, targetStats.currentTrainees, 1800, "currentTrainees");
+      
+      setTimeout(() => {
+        animateCount(0, targetStats.modulesAvailable, 1500, "modulesAvailable");
+      }, 300);
+      
+      setTimeout(() => {
+        animateCount(2000, targetStats.trainingYear, 1600, "trainingYear");
+      }, 600);
+      
+      setTimeout(() => {
+        animateCount(0, targetStats.customizability, 2000, "customizability");
+      }, 900);
+    }, 100);
+  };
+
+  useEffect(() => {
+    setIsVisible(true);
+    
+    // Only run animation on initial load
+    if (!animationRunRef.current) {
+      // Small delay to ensure component is mounted
+      setTimeout(() => {
+        triggerAnimation();
+        animationRunRef.current = true;
+      }, 500);
+    }
+  }, []);
+
+  // Handle click anywhere on the page
+  const handlePageClick = () => {
+    triggerAnimation();
+  };
 
   const trainingStats = [
-    { number: "10+", label: "Current Trainees", description: "Corporate employees actively training", color: "from-blue-500 to-cyan-400" },
-    { number: "50+", label: "Modules Available", description: "ACTS and PG-DAC modules", color: "from-purple-500 to-pink-500" },
-    { number: "2026", label: "Training Calendar", description: "Planned for upcoming year", color: "from-green-500 to-emerald-400" },
-    { number: "100%", label: "Customizable", description: "Tailored to corporate needs", color: "from-orange-500 to-amber-400" }
+    { 
+      number: stats.currentTrainees.toFixed(0) + "+", 
+      label: "Current Trainees", 
+      description: "Corporate employees actively training", 
+      color: "from-blue-500 to-cyan-400" 
+    },
+    { 
+      number: stats.modulesAvailable.toFixed(0) + "+", 
+      label: "Modules Available", 
+      description: "ACTS and PG-DAC modules", 
+      color: "from-purple-500 to-pink-500" 
+    },
+    { 
+      number: stats.trainingYear.toFixed(0), 
+      label: "Training Calendar", 
+      description: "Planned for upcoming year", 
+      color: "from-green-500 to-emerald-400" 
+    },
+    { 
+      number: stats.customizability.toFixed(0) + "%", 
+      label: "Customizable", 
+      description: "Tailored to corporate needs", 
+      color: "from-orange-500 to-amber-400" 
+    }
   ];
 
   const trainingModules = [
@@ -58,26 +161,11 @@ const Coporate = () => {
 
   const quarters = ["Q1", "Q2", "Q3", "Q4"];
 
-  // Animation on component mount
-  useEffect(() => {
-    setIsVisible(true);
-    
-    // Animate stats one by one
-    const timers = trainingStats.map((_, index) => 
-      setTimeout(() => {
-        setStatsAnimated(prev => {
-          const newStats = [...prev];
-          newStats[index] = true;
-          return newStats;
-        });
-      }, 300 + index * 200)
-    );
-
-    return () => timers.forEach(timer => clearTimeout(timer));
-  }, []);
-
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-b from-slate-50 via-white to-blue-50/30 py-8 md:py-12 overflow-hidden">
+    <div 
+      className="min-h-screen mt-20 bg-gradient-to-b from-slate-50 via-white to-blue-50/30 py-8 md:py-12 overflow-hidden cursor-pointer"
+      onClick={handlePageClick}
+    >
       {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400/5 rounded-full blur-3xl animate-pulse"></div>
@@ -97,18 +185,15 @@ const Coporate = () => {
               Empowering corporate workforce with cutting-edge skills through specialized training programs
               and industry-relevant curriculum
             </p>
+            <p className="text-sm text-blue-500 mb-4">Click anywhere to refresh animations</p>
           </div>
           
-          {/* Stats Grid with Stagger Animation */}
+          {/* Stats Grid with Animation */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto mb-12">
             {trainingStats.map((stat, index) => (
               <div 
                 key={index}
-                className={`transform transition-all duration-1000 delay-${index * 100} ${
-                  statsAnimated[index] 
-                    ? 'translate-y-0 opacity-100 scale-100' 
-                    : 'translate-y-10 opacity-0 scale-95'
-                }`}
+                className="transform transition-all duration-1000"
               >
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 text-center transform hover:-translate-y-2 transition-all duration-500 hover:shadow-2xl hover:scale-105 border border-white/50 group relative overflow-hidden">
                   {/* Animated gradient border */}
@@ -123,6 +208,16 @@ const Coporate = () => {
                       {stat.label}
                     </div>
                     <div className="text-sm text-slate-500">{stat.description}</div>
+                    
+                    {/* Progress bar */}
+                    <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden mt-2">
+                      <div 
+                        className={`h-full bg-gradient-to-r ${stat.color} transition-all duration-1000 ease-out`}
+                        style={{ 
+                          width: `${(parseFloat(stats[Object.keys(stats)[index]]) / targetStats[Object.keys(targetStats)[index]]) * 100}%` 
+                        }}
+                      ></div>
+                    </div>
                     
                     {/* Animated underline on hover */}
                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:w-16 transition-all duration-500"></div>
@@ -168,7 +263,7 @@ const Coporate = () => {
                       <div className="text-sm text-slate-500">Currently enrolled in training programs</div>
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-blue-600 animate-bounce-subtle">10+</div>
+                  <div className="text-3xl font-bold text-blue-600 animate-bounce-subtle">{stats.currentTrainees.toFixed(0)}+</div>
                 </div>
                 
                 <div className="bg-gradient-to-r from-blue-500/10 via-cyan-400/10 to-blue-500/10 rounded-xl p-6 animate-gradient-border">
@@ -374,66 +469,6 @@ const Coporate = () => {
         </div>
       </section>
 
-      {/* CTA Section with Floating Animation */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className={`bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 rounded-2xl overflow-hidden shadow-2xl animate-float ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <div className="p-8 md:p-12 relative overflow-hidden">
-            {/* Animated particles */}
-            <div className="absolute inset-0">
-              {[...Array(5)].map((_, i) => (
-                <div 
-                  key={i}
-                  className="absolute w-2 h-2 bg-white/20 rounded-full animate-float"
-                  style={{
-                    left: `${20 + i * 15}%`,
-                    top: `${30 + i * 10}%`,
-                    animationDelay: `${i * 0.5}s`,
-                    animationDuration: `${3 + i * 0.5}s`
-                  }}
-                ></div>
-              ))}
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 items-center relative z-10">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 animate-fade-in">
-                  Elevate Your Team's Skills
-                </h2>
-                <p className="text-blue-100 mb-6 animate-fade-in delay-100">
-                  Partner with us to design customized training programs that drive your organization's growth and innovation.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 animate-fade-in delay-200">
-                  <button className="group px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105">
-                    <svg className="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                    Request Training Proposal
-                  </button>
-                  <Link
-                    to="/contact"
-                    className="group px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105"
-                  >
-                    <svg className="w-5 h-5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
-                    </svg>
-                    Contact Training Coordinator
-                  </Link>
-                </div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm border border-white/20 animate-pulse-slow">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-white mb-2 animate-count-up">10+</div>
-                  <div className="text-blue-100 font-semibold mb-1">Companies Already Training</div>
-                  <div className="text-blue-200 text-sm">Join leading organizations in upskilling their workforce</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer Note */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-10">
         <div className="text-center text-slate-500 text-sm animate-fade-in delay-500">
@@ -441,6 +476,7 @@ const Coporate = () => {
             All training programs are conducted in partnership with C-DAC's Advanced Computing Training School (ACTS) 
             and follow industry best practices.
           </p>
+          <p className="mt-2 text-blue-500">Click anywhere on the page to refresh number animations</p>
         </div>
       </div>
 
@@ -582,4 +618,4 @@ const Coporate = () => {
   );
 };
 
-export default Coporate;
+export default Corporate;

@@ -80,7 +80,7 @@ const Practium = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-slate-50">
+    <div className="w-full mt-15 min-h-screen bg-slate-50">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-10 sm:py-14 md:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 xs:px-5 sm:px-6 lg:px-8">

@@ -40,29 +40,25 @@ const Navbar = () => {
     },
     { 
       name: "Industrial Visits", 
-      path: "/programs/industrial-visits" 
+      path: "/industries" 
     },
   ];
 
   const fundedActivityItems = [
     { 
       name: "ISEA Phase-III", 
-      path: "/funded/isea-phase-iii" 
+      path: "/isea" 
     },
     { 
       name: "FutureSkills Prime", 
       path: "/future" 
     },
     { 
-      name: "SC-ST IoT BLP Upskilling", 
-      path: "/funded/sc-st-iot-blp" 
-    },
-    { 
       name: "Work-based Learning", 
       path: "/wbl" 
     },
     { 
-      name: "C-HUK", 
+      name: " C-HUK", 
       path: "/chuk" 
     },
   ];
@@ -74,11 +70,11 @@ const Navbar = () => {
     },
     { 
       name: "IDoT", 
-      path: "/projects/idot" 
+      path: "/idot" 
     },
     { 
       name: "PKI IoT", 
-      path: "/projects/pki-iot" 
+      path: "/pkiot" 
     },
     { 
       name: "Experiential Center", 
@@ -125,7 +121,7 @@ const Navbar = () => {
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-3">
           <img src={trustlogo} alt="logo" className="h-9 w-9" />
-          <span className="text-xl font-bold text-sky-400">TRUST</span>
+          <span className="text-xl font-bold  bg-gradient-to-r from-sky-500 to-blue-800 bg-clip-text text-transparent">TRUST</span>
         </Link>
 
         {/* DESKTOP MENU */}

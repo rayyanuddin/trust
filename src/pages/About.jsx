@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import trust4 from "../assets/trust4.png";
+import trust4 from "../assets/img3.jpg";
 import photo1 from "../assets/photo1.jpg";
 import photo2 from "../assets/photo2.jpeg";
 import photo3 from "../assets/photo3.jpg";
@@ -11,6 +11,7 @@ import photo7 from "../assets/photo7.jpg";
 import photo8 from "../assets/photo8.jpg";
 import photo9 from "../assets/photo9.jpg";
 import { Link } from "react-router-dom";
+
 const teamMembers = [
   {
     name: "Dr S D Sudarsan",
@@ -81,11 +82,101 @@ const About = () => {
   const [animate, setAnimate] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [hoveredCard, setHoveredCard] = useState(null);
+  
+  // Sci-style scroll animation states
+  const [visibleSections, setVisibleSections] = useState({});
+  const [animationTriggers, setAnimationTriggers] = useState({});
+  const animationTimeouts = useRef({});
+  const sectionRefs = useRef([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimate(true), 50);
     return () => clearTimeout(timer);
   }, []);
+
+  // ============ SCI-STYLE SCROLL ANIMATIONS ============
+  
+  // Check if animation should play for a section
+  const shouldAnimate = (sectionId) => {
+    return visibleSections[sectionId] && animationTriggers[sectionId] > 0;
+  };
+
+  // Get animation class based on visibility and trigger
+  const getAnimationClass = (sectionId) => {
+    if (shouldAnimate(sectionId)) {
+      return 'animate-section';
+    }
+    return 'pre-animation';
+  };
+
+  // Intersection Observer for scroll animations - triggers every time section becomes visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const sectionId = entry.target.id;
+          
+          if (entry.isIntersecting) {
+            // Mark section as visible
+            setVisibleSections(prev => ({
+              ...prev,
+              [sectionId]: true
+            }));
+
+            // Trigger animation for this section
+            setAnimationTriggers(prev => ({
+              ...prev,
+              [sectionId]: (prev[sectionId] || 0) + 1
+            }));
+
+            // Reset animation after it completes (for re-triggering)
+            if (animationTimeouts.current[sectionId]) {
+              clearTimeout(animationTimeouts.current[sectionId]);
+            }
+            
+            animationTimeouts.current[sectionId] = setTimeout(() => {
+              setAnimationTriggers(prev => ({
+                ...prev,
+                [sectionId]: (prev[sectionId] || 0)
+              }));
+            }, 1000); // Reset after animation duration
+          } else {
+            // When section leaves view, we can reset the visible state
+            // but keep the animation trigger count
+            setVisibleSections(prev => ({
+              ...prev,
+              [sectionId]: false
+            }));
+          }
+        });
+      },
+      {
+        threshold: 0.2, // Trigger when 20% of section is visible
+        rootMargin: '0px 0px -100px 0px' // Trigger a bit earlier
+      }
+    );
+
+    // Observe all section refs
+    sectionRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      sectionRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+      // Clear all animation timeouts
+      Object.values(animationTimeouts.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
+      });
+    };
+  }, []);
+
+  const addToRefs = (el, index) => {
+    if (el && !sectionRefs.current.includes(el)) {
+      sectionRefs.current[index] = el;
+    }
+  };
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
@@ -107,7 +198,7 @@ const About = () => {
       {/* ================= HERO SECTION ================= */}
       <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
         {/* Animated Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-900/90 z-10" />
+        <div className="absolute inset-0 z-10" />
 
         {/* Parallax Background */}
         <div
@@ -141,8 +232,6 @@ const About = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mb-6"
           >
-
-
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight">
               <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 About TRUST
@@ -162,33 +251,21 @@ const About = () => {
             </motion.p>
           </motion.div>
 
-          {/* Animated Scroll Indicator */}
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="absolute bottom-8"
-          >
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2" />
-            </div>
-          </motion.div>
         </div>
       </div>
 
       {/* ================= MAIN CONTENT ================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
 
-        {/* Overview Section */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeInUp}
-          transition={{ duration: 0.6 }}
-          className="mb-20"
+        {/* Overview Section with Sci animations */}
+        <section
+          id="overview-section"
+          ref={(el) => addToRefs(el, 0)}
+          className={`mb-20 transition-all duration-500 ${getAnimationClass('overview-section')}`}
         >
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-3 mb-8">
+            <div className={`inline-flex items-center gap-3 mb-8 transition-all duration-1000
+              ${shouldAnimate('overview-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
               <div className="w-12 h-1 bg-gradient-to-r from-sky-400 to-blue-500 rounded-full" />
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900">
                 Our Vision & Mission
@@ -198,9 +275,9 @@ const About = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
               {/* Vision Card */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="group bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-100"
+              <div
+                className={`group bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-100
+                  ${shouldAnimate('overview-section') ? 'animate-slide-in-left' : 'pre-animation-left'}`}
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -214,12 +291,12 @@ const About = () => {
                 <p className="text-lg text-slate-600 leading-relaxed">
                   To become a global leader in technological education and skill development, creating a future-ready workforce equipped with cutting-edge capabilities.
                 </p>
-              </motion.div>
+              </div>
 
               {/* Mission Card */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="group bg-gradient-to-br from-white to-sky-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-sky-100"
+              <div
+                className={`group bg-gradient-to-br from-white to-sky-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-sky-100
+                  ${shouldAnimate('overview-section') ? 'animate-slide-in-right' : 'pre-animation-right'}`}
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -232,21 +309,19 @@ const About = () => {
                 <p className="text-lg text-slate-600 leading-relaxed">
                   Bridging the skill gap by introducing real-world problem solving in advanced technologies through innovative capacity building programs and industry partnerships.
                 </p>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        {/* Key Programs Section */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeInUp}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-20"
+        {/* Key Programs Section with Sci animations */}
+        <section
+          id="programs-section"
+          ref={(el) => addToRefs(el, 1)}
+          className={`mb-20 transition-all duration-500 ${getAnimationClass('programs-section')}`}
         >
-          <div className="text-center mb-16">
+          <div className={`text-center mb-16 transition-all duration-1000
+            ${shouldAnimate('programs-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
             <div className="inline-block px-6 py-2 bg-gradient-to-r from-sky-500/10 to-blue-500/10 rounded-full mb-6">
               <span className="text-sky-600 font-semibold">Core Initiatives</span>
             </div>
@@ -260,9 +335,9 @@ const About = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* I-LABS Card */}
-            <motion.div
-              whileHover={{ y: -10 }}
-              className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-50 via-white to-blue-50 shadow-2xl hover:shadow-3xl transition-all duration-500"
+            <div
+              className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-50 via-white to-blue-50 shadow-2xl hover:shadow-3xl transition-all duration-500
+                ${shouldAnimate('programs-section') ? 'animate-slide-in-left' : 'pre-animation-left'}`}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sky-400/10 to-blue-400/10 rounded-full -translate-y-16 translate-x-16" />
               <div className="relative p-8">
@@ -307,7 +382,6 @@ const About = () => {
                   <Link
                     to="/labs"
                     onClick={() => {
-                      // Smooth scroll to top after navigation
                       setTimeout(() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }, 100);
@@ -321,12 +395,12 @@ const About = () => {
                   </Link>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* FIIP Card */}
-            <motion.div
-              whileHover={{ y: -10 }}
-              className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-2xl hover:shadow-3xl transition-all duration-500"
+            <div
+              className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-2xl hover:shadow-3xl transition-all duration-500
+                ${shouldAnimate('programs-section') ? 'animate-slide-in-right' : 'pre-animation-right'}`}
             >
               <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full -translate-y-16 -translate-x-16" />
               <div className="relative p-8">
@@ -366,7 +440,6 @@ const About = () => {
                   <Link
                     to="/fiip"
                     onClick={() => {
-                      // Smooth scroll to top after navigation
                       setTimeout(() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }, 100);
@@ -380,14 +453,11 @@ const About = () => {
                   </Link>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Activities Grid */}
-          <motion.div
-            variants={staggerChildren}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             {[
               { name: "MEPZ – C-DAC Skill Development Center", category: "funded", icon: "🏭" },
               { name: "Outreach Activities & Events", category: "funded", icon: "🎪" },
@@ -403,16 +473,19 @@ const About = () => {
             ]
               .filter(item => activeTab === "all" || item.category === activeTab)
               .map((activity, index) => (
-                <motion.div
+                <div
                   key={index}
-                  variants={fadeInUp}
-                  whileHover={{ scale: 1.05 }}
-                  onMouseEnter={() => setHoveredCard(index)}
-                  onMouseLeave={() => setHoveredCard(null)}
                   className={`relative overflow-hidden rounded-2xl p-6 transition-all duration-500 ${hoveredCard === index
                     ? "bg-gradient-to-br from-sky-50 to-blue-50 shadow-2xl"
                     : "bg-white shadow-lg hover:shadow-xl"
-                    }`}
+                    }
+                    ${shouldAnimate('programs-section') ? 'animate-scale-up' : 'pre-animation-scale'}`}
+                  style={{ 
+                    animationDelay: `${index * 100}ms`,
+                    animationDuration: '0.6s'
+                  }}
+                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div className="flex items-start gap-4">
                     <div className={`text-2xl p-3 rounded-xl transition-all duration-500 ${hoveredCard === index
@@ -441,21 +514,19 @@ const About = () => {
                   {/* Hover Effect Line */}
                   <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600 transition-transform duration-500 ${hoveredCard === index ? "translate-y-0" : "translate-y-full"
                     }`} />
-                </motion.div>
+                </div>
               ))}
-          </motion.div>
-        </motion.section>
+          </div>
+        </section>
 
-        {/* Team Section */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeInUp}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mb-20"
+        {/* Team Section with Sci animations */}
+        <section
+          id="team-section"
+          ref={(el) => addToRefs(el, 2)}
+          className={`mb-20 transition-all duration-500 ${getAnimationClass('team-section')}`}
         >
-          <div className="text-center mb-16">
+          <div className={`text-center mb-16 transition-all duration-1000
+            ${shouldAnimate('team-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
             <div className="inline-block px-6 py-2 bg-gradient-to-r from-sky-500/10 to-blue-500/10 rounded-full mb-6">
               <span className="text-sky-600 font-semibold">Leadership</span>
             </div>
@@ -469,7 +540,8 @@ const About = () => {
 
           {/* Executive Team */}
           <div className="mb-16">
-            <div className="flex items-center gap-4 mb-10">
+            <div className={`flex items-center gap-4 mb-10 transition-all duration-1000
+              ${shouldAnimate('team-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
               <div className="w-12 h-1 bg-gradient-to-r from-sky-400 to-blue-500 rounded-full" />
               <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Executive Leadership</h3>
               <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-sky-400 rounded-full" />
@@ -479,11 +551,14 @@ const About = () => {
               {teamMembers
                 .filter(member => member.category === "executive")
                 .map((member, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    variants={fadeInUp}
-                    whileHover={{ y: -10 }}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-blue-50 shadow-xl hover:shadow-2xl transition-all duration-500 border border-blue-100"
+                    className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-blue-50 shadow-xl hover:shadow-2xl transition-all duration-500 border border-blue-100
+                      ${shouldAnimate('team-section') ? 'animate-scale-up' : 'pre-animation-scale'}`}
+                    style={{ 
+                      animationDelay: `${index * 100}ms`,
+                      animationDuration: '0.6s'
+                    }}
                   >
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-sky-500 to-blue-600" />
 
@@ -507,14 +582,15 @@ const About = () => {
                         <p className="text-slate-500 text-sm">{member.organization}</p>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
             </div>
           </div>
 
           {/* Committee Team */}
           <div>
-            <div className="flex items-center gap-4 mb-10">
+            <div className={`flex items-center gap-4 mb-10 transition-all duration-1000
+              ${shouldAnimate('team-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
               <div className="w-12 h-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" />
               <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Project Review Committee</h3>
               <div className="w-12 h-1 bg-gradient-to-r from-indigo-500 to-blue-400 rounded-full" />
@@ -524,11 +600,13 @@ const About = () => {
               {teamMembers
                 .filter(member => member.category === "committee")
                 .map((member, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    variants={fadeInUp}
-                    whileHover={{ y: -5 }}
-                    className="group flex items-start gap-6 p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 border border-slate-100"
+                    className={`group flex items-start gap-6 p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 border border-slate-100
+                      ${shouldAnimate('team-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}
+                    style={{ 
+                      animationDelay: `${index * 100 + 200}ms`
+                    }}
                   >
                     <div className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-600 opacity-20" />
@@ -548,21 +626,20 @@ const About = () => {
                       </div>
                       <p className="text-slate-500 text-sm">{member.organization}</p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        {/* Contact Section */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeInUp}
-          transition={{ duration: 0.6, delay: 0.8 }}
+        {/* Contact Section with Sci animations */}
+        <section
+          id="contact-section"
+          ref={(el) => addToRefs(el, 3)}
+          className={`transition-all duration-500 ${getAnimationClass('contact-section')}`}
         >
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8 md:p-12 shadow-2xl">
+          <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8 md:p-12 shadow-2xl
+            ${shouldAnimate('contact-section') ? 'animate-scale-up' : 'pre-animation-scale'}`}>
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-sky-400 to-blue-600 rounded-full -translate-y-32 translate-x-32" />
@@ -570,20 +647,24 @@ const About = () => {
             </div>
 
             <div className="relative z-10 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              <h2 className={`text-3xl md:text-4xl font-bold text-white mb-6 transition-all duration-1000
+                ${shouldAnimate('contact-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}>
                 Let's Build the Future Together
               </h2>
-              <p className="text-gray-200 text-lg mb-10 max-w-2xl mx-auto">
+              <p className={`text-gray-200 text-lg mb-10 max-w-2xl mx-auto transition-all duration-1000
+                ${shouldAnimate('contact-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}
+                style={{animationDelay: '200ms'}}>
                 Partner with us to revolutionize technology education and create impactful learning experiences
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-               
                 <a
                   href="https://c-huk.cdacb.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/30 font-semibold rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 group"
+                  className={`inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/30 font-semibold rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 group
+                    ${shouldAnimate('contact-section') ? 'animate-fade-in-up' : 'opacity-0'}`}
+                  style={{animationDelay: '400ms'}}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -614,11 +695,13 @@ const About = () => {
                     color: "from-indigo-500 to-purple-600"
                   }
                 ].map((contact, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    variants={fadeInUp}
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300"
+                    className={`bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300
+                      ${shouldAnimate('contact-section') ? 'animate-fade-in-up' : 'pre-animation-up'}`}
+                    style={{ 
+                      animationDelay: `${index * 200 + 600}ms`
+                    }}
                   >
                     <div className="text-3xl mb-4">{contact.icon}</div>
                     <h4 className="font-semibold text-white mb-2">{contact.title}</h4>
@@ -631,16 +714,158 @@ const About = () => {
                       </svg>
                       {contact.email}
                     </a>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
       </div>
 
       {/* CSS Animations */}
       <style jsx global>{`
+        /* Sci Animation Styles */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes scaleUp {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes spinSlow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        /* Base animation class for sections */
+        .animate-section {
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.5s ease-out;
+        }
+
+        /* Pre-animation states */
+        .pre-animation {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        .pre-animation-left {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+
+        .pre-animation-right {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+
+        .pre-animation-scale {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+
+        .pre-animation-up {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        /* Animation classes that get applied when triggered */
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .animate-slide-in-left {
+          animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .animate-scale-up {
+          animation: scaleUp 0.6s ease-out forwards;
+        }
+
+        .animate-spin-slow {
+          animation: spinSlow 20s linear infinite;
+        }
+
+        /* Staggered animations for children */
+        .stagger-children > * {
+          opacity: 0;
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* Reset animation for re-triggering */
+        @keyframes reset {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+
+        .animate-reset {
+          animation: reset 0.3s ease-out forwards;
+        }
+
+        /* Existing animations */
         @keyframes parallax {
           0%, 100% {
             transform: scale(1.1) translateY(0);

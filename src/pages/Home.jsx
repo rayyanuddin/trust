@@ -1,6 +1,7 @@
-import trust1 from "../assets/trust1.jpg";
-import trust4 from "../assets/trust4.png";
-import trust5 from "../assets/trust5.jpg";
+import trust1 from "../assets/img2.jpg";
+import trust4 from "../assets/img5.jpg";
+import trust5 from "../assets/img1.jpg";
+import img4 from "../assets/img4.jpg";
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -32,7 +33,6 @@ const Home = () => {
   const [fundedCounters] = useState([
     { name: "ISEA Phase-III", desc: "Awareness program in Cyber security", target: 10000, hasPlus: true },
     { name: "FutureSkills Prime", desc: "MeitY and NASSCOM project (Lead Resource Centre for IoT)", target: 2400, hasPlus: false },
-    { name: "SC-ST IoT BLP Upskilling", desc: "Offered in Blended learning mode", target: 17800, hasPlus: true },
     { name: "Work-based Learning", desc: "6-month stipend-based internship", target: 105, hasPlus: true },
     { name: "C-HUK", desc: "Offered in Offline mode with varied training types", target: 2500, hasPlus: true }
   ]);
@@ -74,7 +74,7 @@ const Home = () => {
     }
   ];
 
-  // Activities data
+
   const activitiesData = [
     {
       title: "PG Certificate Programme",
@@ -142,7 +142,7 @@ const Home = () => {
       emoji: "🏭",
       color: "green",
       delay: 900,
-      link: "/industrial",
+      link: "/industries",
       linkText: "Schedule Visit",
       count: "3,000+"
     },
@@ -166,16 +166,7 @@ const Home = () => {
       linkText: "Explore",
       count: "2,400+"
     },
-    {
-      title: "Funded: SC-ST IoT BLP",
-      desc: "Upskilling offered in Blended learning mode for SC-ST candidates.",
-      emoji: "📱",
-      color: "purple",
-      delay: 1200,
-      link: "/scst-iot",
-      linkText: "View Details",
-      count: "17,800+"
-    },
+  
     {
       title: "Funded: Work-based Learning",
       desc: "6-month stipend-based internship programs.",
@@ -527,8 +518,8 @@ const Home = () => {
       <div className="relative w-full h-[90vh] md:h-[95vh] overflow-hidden">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 z-0 opacity-10">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+          <div className="absolute top-0 left-0 w-64 h-64  rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-64 h-64  rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
         </div>
 
         {/* Slides */}
@@ -546,7 +537,7 @@ const Home = () => {
               index === currentSlide ? 'z-10' : 'z-0'
             }`}
             style={{
-              backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.95)), url(${image.src})`,
+              backgroundImage: `linear-gradient(rgba(15,23,42,0.56), rgba(15,23,42,0.66)), url(${image.src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
@@ -641,18 +632,14 @@ const Home = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20"
-        >
+      
           <div className="flex flex-col items-center gap-2">
             <span className="text-white/50 text-sm">Scroll to explore</span>
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
               <div className="w-1 h-3 bg-white/50 rounded-full mt-2" />
             </div>
           </div>
-        </motion.div>
+       
       </div>
 
       {/* About Section */}
@@ -714,9 +701,9 @@ const Home = () => {
             >
               <div className="absolute -inset-6 bg-gradient-to-r from-sky-200 to-blue-200 rounded-3xl blur-3xl opacity-20"></div>
               <img
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+                src={img4}
                 alt="About Trust"
-                className="relative w-full h-[400px] object-cover rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-700"
+                className="relative w-full h-[450px] object-cover rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>
