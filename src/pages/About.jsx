@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import trust4 from "../assets/img3.jpg";
+import trust4 from "../assets/img9.jpg";
 import photo1 from "../assets/photo1.jpg";
 import photo2 from "../assets/photo2.jpeg";
 import photo3 from "../assets/photo3.jpg";

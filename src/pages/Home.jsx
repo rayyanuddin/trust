@@ -1,7 +1,7 @@
 import trust1 from "../assets/img2.jpg";
-import trust4 from "../assets/img5.jpg";
+import trust4 from "../assets/img.jpg";
 import trust5 from "../assets/img1.jpg";
-import img4 from "../assets/img4.jpg";
+import img4 from "../assets/img8.jpg";
 import sci4 from "../assets/sci2.jpg"
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
