@@ -17,11 +17,9 @@ const Industries = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const containerRef = useRef(null);
-  const topRef = useRef(null);
-
+  
   useEffect(() => {
-    // Trigger auto-refresh on initial page load
+    
     if (isInitialLoad) {
       handleAutoRefresh();
       setIsInitialLoad(false);
@@ -59,70 +57,19 @@ const Industries = () => {
     }, 700);
   };
 
-  const handleManualRefresh = () => {
-    setIsRefreshing(true);
-    
-    // Save current scroll position
-    const scrollPosition = window.scrollY;
-    
-    // Simulate refresh with a timeout
-    setTimeout(() => {
-      setIsRefreshing(false);
-      
-      // Trigger re-animation
-      setIsVisible(false);
-      setTimeout(() => setIsVisible(true), 50);
-      
-      // Restore scroll position instead of scrolling to top
-      window.scrollTo(0, scrollPosition);
-    }, 1500);
-  };
+  
 
   // Fixed SVG pattern - properly encoded
   const svgPattern = encodeURIComponent(`<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="#ffffff" fill-opacity="0.4"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>`);
 
   return (
-    <div ref={containerRef} className="min-h-screen mt-17 bg-gradient-to-br from-blue-50 to-gray-50 p-4 md:p-8 relative">
-      {/* Scroll anchor at the top */}
-      <div ref={topRef} className="absolute top-0 left-0 w-1 h-1 opacity-0"></div>
+    <div className="min-h-screen mt-17 bg-gradient-to-br from-blue-50 to-gray-50 p-4 md:p-8 relative">
+      <div className="absolute top-0 left-0 w-1 h-1 opacity-0"></div>
       
-      {/* Welcome Animation Overlay - Only shows on initial load */}
-      {isInitialLoad && (
-        <div className="fixed inset-0 bg-gradient-to-br from-blue-900 to-indigo-900 z-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="relative mb-8">
-              <FaRocket className="text-8xl text-white animate-bounce mb-4 mx-auto" />
-              <div className="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-50"></div>
-            </div>
-            <h2 className="text-4xl font-bold text-white mb-4 animate-pulse">
-              Welcome to Industrial Visits Program
-            </h2>
-            <p className="text-xl text-blue-200 mb-8">
-              Loading latest updates...
-            </p>
-            <div className="w-64 h-2 bg-blue-800 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-[progress_1.5s_ease-in-out]"></div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Refresh Button */}
-      <div className="fixed top-4 right-4 z-10">
-        <button
-          onClick={handleManualRefresh}
-          disabled={isRefreshing}
-          className={`flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${isRefreshing ? 'opacity-80 cursor-not-allowed' : 'hover:scale-105'}`}
-        >
-          <FaSync className={`text-lg ${isRefreshing ? 'animate-spin' : ''}`} />
-          <span className="font-semibold">
-            {isRefreshing ? 'Refreshing...' : 'Refresh Content'}
-          </span>
-        </button>
-      </div>
-
+  
+    
       <div className="max-w-6xl mx-auto">
-        {/* Header with animation trigger */}
+     
         <div className={`text-center mb-10 md:mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}>
           <div className="relative inline-block">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-900 mb-4">
@@ -136,14 +83,14 @@ const Industries = () => {
           <div className="h-1 w-24 md:w-32 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto mt-4 rounded-full"></div>
         </div>
 
-        {/* Main Card with enhanced animations */}
+       
         <div className={`relative bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {/* Animated border effect */}
+          
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-2xl opacity-0 hover:opacity-10 transition-opacity duration-500"></div>
           
-          {/* Card Header */}
+        
           <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white p-6 md:p-8 relative overflow-hidden">
-            {/* Animated background pattern - FIXED */}
+         
             <div className="absolute inset-0 opacity-10">
               <div 
                 className="absolute inset-0" 

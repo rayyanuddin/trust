@@ -21,10 +21,9 @@ const Sci = () => {
   const statsRef = useRef(null);
   const animationTimeouts = useRef({});
 
-  // SCI Official Website URL
   const SCI_OFFICIAL_WEBSITE = "https://sci25.supercomputingindia.org/index";
 
-  // Conference banner images for slider
+ 
   const bannerImages = [
     {
       id: 1,
@@ -58,52 +57,7 @@ const Sci = () => {
     }
   ];
 
-  const imagesData = [
-    {
-      id: 1,
-      image: sci6,
-      definition: 'Conference banner for SUPER COMPUTING INDIA 2025 showcasing the convergence of HPC, AI, Quantum Computing, Semiconductor, and Cybersecurity technologies.',
-      alt: 'Super Computing India 2025 Conference Banner',
-      category: 'Conference',
-      date: 'Dec 09-13, 2025',
-      location: 'Manipal Institute of Technology, Bengaluru',
-      tags: ['HPC', 'AI', 'Quantum', 'Cybersecurity']
-    },
-    {
-      id: 2,
-      image: sci5,
-      definition: 'Conference banner highlighting the convergence of cutting-edge technologies including High Performance Computing, Artificial Intelligence, Quantum Computing, Semiconductor, and Cybersecurity.',
-      alt: 'Super Computing India 2025 Banner',
-      category: 'Conference',
-      date: 'Dec 09-13, 2025',
-      location: 'Manipal Institute of Technology, Bengaluru',
-      tags: ['HPC', 'AI', 'Quantum', 'Semiconductor']
-    },
-    {
-      id: 3,
-      image: sci3,
-      definition: 'Software product engineering services featuring generational security classifications with a focus on AI-based security solutions and edge computing technologies.',
-      alt: 'Software Product Engineering and Security Services',
-      category: 'Technical',
-      tags: ['Security', 'AI', 'Edge Computing', 'Engineering']
-    },
-    {
-      id: 4,
-      image: sci2,
-      definition: 'Strategic partnership between Electronics City Industries Association (ELCIA) and C-DAC for IoT products, sensor solutions, HPC infrastructure, and industry skilling.',
-      alt: 'ELCIA and C-DAC Partnership Letter',
-      category: 'Partnership',
-      tags: ['IoT', 'HPC', 'Industry', 'Collaboration']
-    },
-    {
-      id: 5,
-      image: sci1,
-      definition: 'Collaboration between C-DAC and University Technical Malaysia Melaka focusing on knowledge sharing, joint training, research, and establishment of technology labs.',
-      alt: 'C-DAC and UTeM Collaboration Agreement',
-      category: 'International',
-      tags: ['Research', 'Training', 'Technology Lab', 'International']
-    }
-  ];
+
 
   const conferenceInfo = {
     name: "Supercomputing India SCI2025",
@@ -137,7 +91,6 @@ const Sci = () => {
     ]
   };
 
-  // Auto-slide functionality
   useEffect(() => {
     setIsVisible(true);
     
@@ -151,14 +104,14 @@ const Sci = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      // Clear all animation timeouts
+    
       Object.values(animationTimeouts.current).forEach(timeout => {
         if (timeout) clearTimeout(timeout);
       });
     };
   }, [isAutoPlaying]);
 
-  // Intersection Observer for scroll animations - triggers every time section becomes visible
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

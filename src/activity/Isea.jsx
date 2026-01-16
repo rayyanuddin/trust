@@ -78,6 +78,16 @@ import coordinatorPhoto from "../assets/photo3.jpg"; // Make sure this path is c
 // Import ministry logo image
 import ministryLogo from "../assets/ministry.webp"; // Make sure this path is correct
 
+// Import ALL 8 images from assets
+import welcomeImage from "../assets/WhatsApp Image 2025-02-12 at 8.20.15 PM.jpeg";
+import bengaluruImage from "../assets/img  2.jpeg";
+import infoSecurityImage from "../assets/3 (2).jpeg";
+import postalEventImage from "../assets/Postal Event 3.jpeg";
+import dataBreachImage from "../assets/Misbah sir.jpg";
+import darkWebImage from "../assets/img2.jpeg";
+import paceGroupImage from "../assets/img1.jpeg";
+import hosurImage from "../assets/12.jpeg";
+
 // ================== IMAGE SLIDER COMPONENT ==================
 const ImageSlider = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -154,6 +164,10 @@ const ImageSlider = ({ images }) => {
                 alt={image.title}
                 className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
                 onClick={() => openModal(image)}
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = `https://via.placeholder.com/1200x600/1e40af/ffffff?text=${encodeURIComponent(image.title)}`;
+                }}
               />
               
               {/* Image Overlay with Text */}
@@ -161,6 +175,13 @@ const ImageSlider = ({ images }) => {
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <h3 className="text-xl md:text-2xl font-bold mb-2">{image.title}</h3>
                   <p className="text-gray-200">{image.description}</p>
+                  {image.location && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-300">
+                      <MapPin className="h-4 w-4" />
+                      <span>{image.location}</span>
+                      {image.date && <span>• {image.date}</span>}
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 mt-2">
                     {image.tags.map((tag, tagIndex) => (
                       <span key={tagIndex} className="px-2 py-1 bg-white/20 rounded-full text-xs">
@@ -225,6 +246,10 @@ const ImageSlider = ({ images }) => {
               src={image.url}
               alt={`Thumbnail ${index + 1}`}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `https://via.placeholder.com/200x100/1e40af/ffffff?text=${index + 1}`;
+              }}
             />
             <div className={`absolute inset-0 ${
               index === currentIndex ? 'bg-blue-500/30' : 'bg-black/30'
@@ -248,11 +273,22 @@ const ImageSlider = ({ images }) => {
               src={selectedImage.url}
               alt={selectedImage.title}
               className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `https://via.placeholder.com/1200x800/1e40af/ffffff?text=${encodeURIComponent(selectedImage.title)}`;
+              }}
             />
             
             <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4 rounded-b-lg">
               <h3 className="text-2xl font-bold">{selectedImage.title}</h3>
               <p className="mt-2">{selectedImage.description}</p>
+              {selectedImage.location && (
+                <div className="flex items-center gap-2 mt-2 text-gray-300">
+                  <MapPin className="h-4 w-4" />
+                  <span>{selectedImage.location}</span>
+                  {selectedImage.date && <span>• {selectedImage.date}</span>}
+                </div>
+              )}
               <div className="flex flex-wrap gap-2 mt-3">
                 {selectedImage.tags.map((tag, index) => (
                   <span key={index} className="px-3 py-1 bg-blue-500/50 rounded-full text-sm">
@@ -513,61 +549,63 @@ const Isea = () => {
     }
   };
 
-  // ================== IMAGE SLIDER DATA ==================
+  // ================== IMAGE SLIDER DATA - ALL 8 IMAGES ==================
   const iseaImages = [
     {
-      url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Cybersecurity Awareness Workshop",
-      description: "Students participating in ISEA cybersecurity training session at IIT Delhi",
-      tags: ["Workshop", "Students", "Training"]
+      url: welcomeImage,
+      title: "Welcome to ISEA Program",
+      description: "COURSE OF INFORMATIONAL TECHNOLOGY - Building cybersecurity skills for the nation",
+      tags: ["Welcome", "Education", "IT Course"]
     },
     {
-      url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "National Hackathon 2024",
-      description: "Final round of ISEA National Cybersecurity Hackathon at CDAC Bengaluru",
-      tags: ["Hackathon", "Innovation", "Competition"]
+      url: bengaluruImage,
+      title: "Cyber Hygiene Workshop - Bengaluru",
+      description: "Cyber Hygiene - Practices to Achieve Cyber Safety. Keeping yourself and your family safe in a tech-driven world",
+      tags: ["Workshop", "Bengaluru", "Cyber Hygiene"],
+      location: "Architecture Block, Cs Dept Rd, Basavanagudi, Bengaluru",
+      date: "16/10/2025"
     },
     {
-      url: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "CISO Training Program",
-      description: "Government officials undergoing advanced cybersecurity leadership training",
-      tags: ["Professional", "CISO", "Government"]
+      url: infoSecurityImage,
+      title: "Information Security Education & Awareness",
+      description: "An Initiative of Ministry of Electronics & Information Technology (MeitY) - Human Resource Development for Safe, Trusted and Secure Cyber Space",
+      tags: ["ISEA", "MeitY", "Government Initiative"]
     },
     {
-      url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Cyber Awareness Campaign",
-      description: "Mass awareness program in rural areas promoting cyber hygiene",
-      tags: ["Awareness", "Rural", "Community"]
+      url: postalEventImage,
+      title: "ISEA Program Timeline",
+      description: "Long-term commitment to cybersecurity education from 2021 to 2262",
+      tags: ["Timeline", "Planning", "Long-term"]
     },
     {
-      url: "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Research & Development Lab",
-      description: "Advanced cybersecurity research facility at NIT Trichy",
-      tags: ["Research", "Lab", "Technology"]
+      url: dataBreachImage,
+      title: "Data Security Statistics",
+      description: "Data Breach vs Data Exposure - Understanding cybersecurity threats: 144,757,076 data exposures vs 1,001 data breaches",
+      tags: ["Data Security", "Statistics", "Awareness"]
     },
     {
-      url: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Women in Cybersecurity",
-      description: "Special training program for women professionals in cybersecurity",
-      tags: ["Women", "Empowerment", "Training"]
+      url: darkWebImage,
+      title: "Surface/Deep/Dark Web Overview",
+      description: "Understanding the different layers of the internet for better cybersecurity - 96% Surface Web vs 4% Dark Web",
+      tags: ["Dark Web", "Internet Layers", "Security"],
+      location: "Badamanavarathekaval, Karnataka",
+      date: "17/10/2025"
     },
     {
-      url: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Industry Collaboration",
-      description: "ISEA partnering with industry leaders for cybersecurity solutions",
-      tags: ["Industry", "Partnership", "Collaboration"]
+      url: paceGroupImage,
+      title: "PACE Group Outreach",
+      description: "Cybersecurity awareness program in rural communities",
+      tags: ["Community", "Outreach", "Rural"],
+      location: "Kairangale Village, Ullal, Karnataka",
+      date: "18/10/2025"
     },
     {
-      url: "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Digital Literacy Drive",
-      description: "Teaching cybersecurity basics to senior citizens and non-IT users",
-      tags: ["Literacy", "Elderly", "Community"]
-    },
-    {
-      url: "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      title: "Mobile Security Awareness",
-      description: "Workshop on mobile app security and privacy settings",
-      tags: ["Mobile", "Security", "Workshop"]
+      url: hosurImage,
+      title: "College Awareness Program",
+      description: "Cybersecurity education program at educational institutions",
+      tags: ["College", "Students", "Education"],
+      location: "MGR COLLEGE, Kumudepalli, Hosur, Tamil Nadu",
+      date: "29/01/2025"
     }
   ];
 
@@ -766,6 +804,10 @@ const Isea = () => {
                           src={projectDetails.coordinator.image}
                           alt={projectDetails.coordinator.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/64/3b82f6/ffffff?text=MM";
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
@@ -864,7 +906,70 @@ const Isea = () => {
               </ul>
             </div>
           </div>
+{/* ISEA Virtual Platform Section */}
+        <div className={`mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '500ms' }}>
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl shadow-xl p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Cloud className="h-8 w-8 text-blue-700" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  ISEA Virtual Platform (IVP)
+                </h2>
+                <p className="text-gray-600">{iseaVirtualPlatform.description}</p>
+              </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+              <div className="bg-white rounded-xl p-6 text-center shadow-md">
+                <Layers className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900">Common Infrastructure</h3>
+                <p className="text-sm text-gray-600 mt-2">Shared resources on cloud</p>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 text-center shadow-md">
+                <Server className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900">Unified Interface</h3>
+                <p className="text-sm text-gray-600 mt-2">Single platform for all verticals</p>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 text-center shadow-md">
+                <Database className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900">Shared Resources</h3>
+                <p className="text-sm text-gray-600 mt-2">Labs, content, tools</p>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 text-center shadow-md">
+                <Network className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900">Hub & Spoke</h3>
+                <p className="text-sm text-gray-600 mt-2">Connects 50+ institutions</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Image Gallery Slider - ALL 8 IMAGES */}
+        <div className={`mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '550ms' }}>
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  ISEA in Action
+                </h2>
+                <p className="text-gray-600">Visual journey through our programs and activities across India</p>
+              </div>
+              <div className="hidden md:flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
+                <Camera className="h-5 w-5 text-blue-600" />
+                <span className="text-sm font-medium">{iseaImages.length} Photos</span>
+              </div>
+            </div>
+            
+            <ImageSlider images={iseaImages} />
+            
+          
+          </div>
+        </div>
           {/* Project Timeline Section */}
           <div className={`bg-white rounded-2xl shadow-xl p-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '400ms' }}>
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Project Timeline</h3>
@@ -932,74 +1037,7 @@ const Isea = () => {
           </div>
         </div>
 
-        {/* ISEA Virtual Platform Section */}
-        <div className={`mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '500ms' }}>
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl shadow-xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <Cloud className="h-8 w-8 text-blue-700" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ISEA Virtual Platform (IVP)
-                </h2>
-                <p className="text-gray-600">{iseaVirtualPlatform.description}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <Layers className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900">Common Infrastructure</h3>
-                <p className="text-sm text-gray-600 mt-2">Shared resources on cloud</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <Server className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900">Unified Interface</h3>
-                <p className="text-sm text-gray-600 mt-2">Single platform for all verticals</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <Database className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900">Shared Resources</h3>
-                <p className="text-sm text-gray-600 mt-2">Labs, content, tools</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <Network className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900">Hub & Spoke</h3>
-                <p className="text-sm text-gray-600 mt-2">Connects 50+ institutions</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Image Gallery Slider */}
-        <div className={`mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '550ms' }}>
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ISEA in Action - Gallery
-                </h2>
-                <p className="text-gray-600">Visual journey through our programs and activities</p>
-              </div>
-              <div className="hidden md:flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
-                <Camera className="h-5 w-5 text-blue-600" />
-                <span className="text-sm font-medium">{iseaImages.length} Photos</span>
-              </div>
-            </div>
-            
-            <ImageSlider images={iseaImages} />
-            
-            <div className="mt-6 text-center">
-              <p className="text-gray-600 text-sm">
-                Click on images to view in full screen • Use arrow keys to navigate
-              </p>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Four Verticals Section - COMPLETE */}
         <div className={`mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '600ms' }}>
@@ -1397,6 +1435,10 @@ const Isea = () => {
                           src={projectDetails.coordinator.image}
                           alt={projectDetails.coordinator.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/48/3b82f6/ffffff?text=MM";
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">

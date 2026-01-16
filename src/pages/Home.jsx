@@ -2,6 +2,7 @@ import trust1 from "../assets/img2.jpg";
 import trust4 from "../assets/img5.jpg";
 import trust5 from "../assets/img1.jpg";
 import img4 from "../assets/img4.jpg";
+import sci4 from "../assets/sci2.jpg"
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -962,7 +963,7 @@ const Home = () => {
                 date: "September 12, 2025",
                 title: "SCI Conference",
                 desc: "A flagship conference focusing on advancements in system and information security.",
-                img: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678",
+                img: sci4,
                 color: "blue",
                 delay: 400
               },

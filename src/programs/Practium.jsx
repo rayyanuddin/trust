@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Target, Users, Clock, Award, BookOpen, GraduationCap, Shield, CheckCircle, Briefcase, Cpu, Lock, Brain, Microchip, Wrench } from "lucide-react";
+import img1 from "../assets/img1.jpg";
 
 const Practium = () => {
   const [animate, setAnimate] = useState(false);
@@ -81,8 +82,16 @@ const Practium = () => {
 
   return (
     <div className="w-full mt-15 min-h-screen bg-slate-50">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-10 sm:py-14 md:py-16 lg:py-20">
+      {/* Hero Section with Background Image */}
+      <div 
+        className="relative text-white py-10 sm:py-14 md:py-16 lg:py-20"
+        style={{
+          backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(49, 46, 129, 0.9)), url(${img1})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 xs:px-5 sm:px-6 lg:px-8">
           <div className={`transition-all duration-1000 ${animate ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}>
             <div className="flex items-center justify-center mb-3 sm:mb-4">
@@ -633,7 +642,6 @@ const Practium = () => {
               >
                 Request Program Details
               </a>
-             
             </div>
           </div>
         </div>

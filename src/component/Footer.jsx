@@ -164,7 +164,7 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-gray-500 text-center text-xs sm:text-sm mt-2">
-              © 2025 TRUST. All rights reserved.
+              © 2026 TRUST. All rights reserved.
             </p>
           </div>
         </div>
