@@ -71,7 +71,7 @@ const Home = () => {
       title: "Innovation in Education",
       subtitle: "Creating next-generation learning experiences through technology and collaboration.",
       gradient: "from-green-500 to-teal-600",
-      cta: "Join Us"
+      cta: "Contact Us"
     }
   ];
 
@@ -944,7 +944,7 @@ const Home = () => {
               Recent & Upcoming Events
             </h2>
             <p className="text-gray-600 max-w-3xl mx-auto text-lg px-4">
-              Join us for our outreach activities, conferences, and workshops.
+              Contact us for our outreach activities, conferences, and workshops.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-sky-400 to-blue-500 mx-auto mt-6 rounded-full"></div>
           </div>
