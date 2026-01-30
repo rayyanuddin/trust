@@ -110,7 +110,7 @@ const Mepz = () => {
           <div className="inline-flex items-center gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full border border-blue-200">
             <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm sm:text-base text-blue-700 font-semibold">
-              Admissions Open for 27 January 2026 Batch
+              Admissions Open for 17 January 2026 Batch
             </span>
           </div>
         </div>
@@ -208,7 +208,7 @@ const Mepz = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4">
                   <div className="text-xs sm:text-sm text-emerald-200 mb-1">Course Start Date</div>
-                  <div className="text-base sm:text-lg font-bold">26 January 2026</div>
+                  <div className="text-base sm:text-lg font-bold">17 January 2026</div>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4">
@@ -376,7 +376,7 @@ const Mepz = () => {
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-lg sm:rounded-xl hover:shadow-xl hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300 w-full text-center"
                   >
-                    <span className="text-sm sm:text-base">Apply Now for December 2025 Batch</span>
+                    <span className="text-sm sm:text-base">Apply Now for january 2026 Batch</span>
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
